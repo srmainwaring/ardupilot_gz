@@ -4,8 +4,8 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Global Options1
         - /Iris1
-        - /Iris1/TF1
       Splitter Ratio: 0.5
     Tree Height: 288
   - Class: rviz_common/Selection
@@ -66,7 +66,7 @@ Visualization Manager:
             Durability Policy: Volatile
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /robot_description
+            Value: /iris0/robot_description
           Enabled: true
           Links:
             All Links Enabled: true
@@ -122,7 +122,7 @@ Visualization Manager:
             Inertia: false
             Mass: false
           Name: RobotModel
-          TF Prefix: iris
+          TF Prefix: iris0
           Update Interval: 0
           Value: true
           Visual Enabled: true
@@ -131,27 +131,27 @@ Visualization Manager:
           Frame Timeout: 15
           Frames:
             All Enabled: true
-            iris:
+            iris0:
               Value: true
-            iris/base_link:
+            iris0/base_link:
               Value: true
-            iris/gimbal_link:
+            iris0/gimbal_link:
               Value: true
-            iris/imu_link:
+            iris0/imu_link:
               Value: true
-            iris/odom:
+            iris0/odom:
               Value: true
-            iris/roll_link:
+            iris0/roll_link:
               Value: true
-            iris/rotor_0:
+            iris0/rotor_0:
               Value: true
-            iris/rotor_1:
+            iris0/rotor_1:
               Value: true
-            iris/rotor_2:
+            iris0/rotor_2:
               Value: true
-            iris/rotor_3:
+            iris0/rotor_3:
               Value: true
-            iris/tilt_link:
+            iris0/tilt_link:
               Value: true
           Marker Scale: 1
           Name: TF
@@ -159,25 +159,25 @@ Visualization Manager:
           Show Axes: true
           Show Names: false
           Tree:
-            iris/odom:
-              iris:
-                iris/base_link:
+            iris0/odom:
+              iris0:
+                iris0/base_link:
                   {}
-                iris/gimbal_link:
+                iris0/gimbal_link:
                   {}
-                iris/imu_link:
+                iris0/imu_link:
                   {}
-                iris/roll_link:
+                iris0/roll_link:
                   {}
-                iris/rotor_0:
+                iris0/rotor_0:
                   {}
-                iris/rotor_1:
+                iris0/rotor_1:
                   {}
-                iris/rotor_2:
+                iris0/rotor_2:
                   {}
-                iris/rotor_3:
+                iris0/rotor_3:
                   {}
-                iris/tilt_link:
+                iris0/tilt_link:
                   {}
           Update Interval: 0
           Value: true
@@ -218,7 +218,7 @@ Visualization Manager:
             Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /odometry
+            Value: /iris0/odometry
           Value: true
         - Class: rviz_default_plugins/Image
           Enabled: true
@@ -232,14 +232,14 @@ Visualization Manager:
             Durability Policy: Volatile
             History Policy: Keep Last
             Reliability Policy: Reliable
-            Value: /camera/image
+            Value: /iris0/camera/image
           Value: true
       Enabled: true
       Name: Iris
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: iris/odom
+    Fixed Frame: iris0/odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -282,25 +282,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.5634095668792725
+      Distance: 6.530806064605713
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.780073881149292
-        Y: 1.6334694623947144
-        Z: -0.6402829885482788
+        X: -0.8933790326118469
+        Y: 1.5447067022323608
+        Z: -0.9158180356025696
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4297952950000763
+      Pitch: 0.5097954869270325
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.203584671020508
+      Yaw: 5.313591480255127
     Saved: ~
 Window Geometry:
   Displays:

@@ -30,7 +30,10 @@
 # limitations under the License.
 
 """Launch an iris quadcopter in Gazebo and Rviz."""
+import math
 import os
+
+from typing import List
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -46,27 +49,51 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-def generate_launch_description():
+def generate_launch_description() -> LaunchDescription:
     """Generate a launch description for a iris quadcopter."""
     pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
     pkg_project_gazebo = get_package_share_directory("ardupilot_gz_gazebo")
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
 
+    # Declare all launch arguments.
+    launch_arguments = generate_launch_arguments()
+
     # Iris.
-    iris = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [
-                PathJoinSubstitution(
-                    [
-                        FindPackageShare("ardupilot_gz_bringup"),
-                        "launch",
-                        "robots",
-                        "iris.launch.py",
-                    ]
-                ),
-            ]
+    num_rows = 1
+    num_cols = 1
+    num_robots = num_rows * num_rows
+    robots = []
+    for i in range(num_robots):
+        pos_x = float(i % num_cols)
+        pos_y = float(i // num_cols)
+
+        robot = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                [
+                    PathJoinSubstitution(
+                        [
+                            FindPackageShare("ardupilot_gz_bringup"),
+                            "launch",
+                            "robots",
+                            "iris.launch.py",
+                        ]
+                    ),
+                ]
+            ),
+            launch_arguments={
+                "model": "iris_with_gimbal",
+                "name": f"iris{i}",
+                "x": f"{pos_x}",
+                "y": f"{pos_y}",
+                "z": "0.194923",
+                "R": "0.0",
+                "P": "0.0",
+                "Y": f"{math.pi / 2.0}",
+                "instance": f"{i}",
+                "sysid": f"{i + 1}",
+            }.items(),
         )
-    )
+        robots.append(robot)
 
     # Gazebo.
     gz_sim_server = IncludeLaunchDescription(
@@ -95,13 +122,20 @@ def generate_launch_description():
     )
 
     return LaunchDescription(
-        [
-            DeclareLaunchArgument(
-                "rviz", default_value="true", description="Open RViz."
-            ),
+        launch_arguments
+        + [
             gz_sim_server,
             gz_sim_gui,
-            iris,
+        ]
+        + robots
+        + [
             rviz,
         ]
     )
+
+
+def generate_launch_arguments() -> List[DeclareLaunchArgument]:
+    """Generate a list of launch arguments."""
+    return [
+        DeclareLaunchArgument("rviz", default_value="true", description="Open RViz."),
+    ]

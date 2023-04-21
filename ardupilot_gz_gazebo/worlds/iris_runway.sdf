@@ -72,11 +72,11 @@
       <pose>0 0 0 0 0 1.57079632</pose>
     </include>
 
-    <include>
+    <!-- <include>
       <uri>model://iris_with_gimbal</uri>
       <name>iris</name>
       <pose>0 0 0.194923 0 0 1.57079632</pose>
-    </include>
+    </include> -->
 
   </world>
 </sdf>
