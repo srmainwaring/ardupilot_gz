@@ -16,23 +16,21 @@
 """
 Launch an iris quadcopter in Gazebo and Rviz.
 
-ros2 launch ardupilot_sitl sitl_dds.launch.py
-tty0:=./dev/ttyROS0
-tty1:=./dev/ttyROS1
+ros2 launch ardupilot_sitl sitl_dds_udp.launch.py
+transport:=udp4
 refs:=$(ros2 pkg prefix ardupilot_sitl)
       /share/ardupilot_sitl/config/dds_xrce_profile.xml
-baudrate:=115200 device:=./dev/ttyROS0
+port:=2019
 synthetic_clock:=True
-wipe:=True
+wipe:=False
 model:=json
 speedup:=1
 slave:=0
 instance:=0
-uartC:=uart:./dev/ttyROS1
 defaults:=$(ros2 pkg prefix ardupilot_sitl)
           /share/ardupilot_sitl/config/default_params/gazebo-iris.parm,
           $(ros2 pkg prefix ardupilot_sitl)
-          /share/ardupilot_sitl/config/default_params/dds.parm
+          /share/ardupilot_sitl/config/default_params/dds_udp.parm
 sim_address:=127.0.0.1
 master:=tcp:127.0.0.1:5760
 sitl:=127.0.0.1:5501
@@ -83,9 +81,6 @@ def launch_sitl_dds(
     sitl_port = 5501 + port_offset
     sim_address = "127.0.0.1"
 
-    tty0 = f"./dev/ttyROS{instance * 10}"
-    tty1 = f"./dev/ttyROS{instance * 10 + 1}"
-
     # Include component launch files.
     sitl_dds = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -94,16 +89,14 @@ def launch_sitl_dds(
                     [
                         FindPackageShare("ardupilot_sitl"),
                         "launch",
-                        "sitl_dds.launch.py",
+                        "sitl_dds_udp.launch.py",
                     ]
                 ),
             ]
         ),
         launch_arguments={
-            # virtual_ports
-            "tty0": tty0,
-            "tty1": tty1,
             # micro_ros_agent
+            "transport": "udp4",
             "micro_ros_agent_ns": f"{name}",
             "refs": PathJoinSubstitution(
                 [
@@ -112,17 +105,15 @@ def launch_sitl_dds(
                     "dds_xrce_profile.xml",
                 ]
             ),
-            "baudrate": "115200",
-            "device": tty0,
+            "port": "2019",
             # ardupilot_sitl
             "synthetic_clock": "True",
-            "wipe": "True",
+            "wipe": "False",
             "model": "json",
             "speedup": "1",
             "slave": "0",
             "instance": f"{instance}",
             "sysid": f"{sysid}",
-            "uartC": f"uart:{tty1}",
             "defaults": os.path.join(
                 pkg_ardupilot_gazebo,
                 "config",
@@ -133,7 +124,7 @@ def launch_sitl_dds(
                 pkg_ardupilot_sitl,
                 "config",
                 "default_params",
-                "dds.parm",
+                "dds_udp.parm",
             ),
             "sim_address": f"{sim_address}",
             # mavproxy
@@ -199,7 +190,7 @@ def launch_robot_state_publisher(
         "<fdm_port_in>9002</fdm_port_in>", f"<fdm_port_in>{control_port}</fdm_port_in>"
     )
 
-    print(robot_desc)
+    # print(robot_desc)
 
     # Remap the `tf` and `tf_static` under `ignore` to prevent conflicts.
     robot_state_publisher = Node(
@@ -213,8 +204,6 @@ def launch_robot_state_publisher(
             # {"frame_prefix": f"{name}/"},
         ],
         remappings=[
-            # ("joint_states", "joint_states"),
-            # ("robot_description", "robot_description"),
             ("/tf", "ignore/tf"),
             ("/tf_static", "ignore/tf_static"),
         ],
@@ -248,7 +237,7 @@ def launch_spawn_robot(
             "-name",
             name,
             "-topic",
-            f"robot_description",
+            "robot_description",
             "-x",
             pos_x,
             "-y",
