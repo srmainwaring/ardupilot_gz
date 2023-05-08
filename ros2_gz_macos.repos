@@ -11,15 +11,27 @@ repositories:
     type: git
     url: https://github.com/ArduPilot/ardupilot_gz.git
     version: main
+  gps_umd:
+    type: git
+    url: https://github.com/swri-robotics/gps_umd.git
+    version: ros2-devel
   micro_ros_agent:
     type: git
-    url: https://github.com/micro-ROS/micro-ROS-Agent.git
+    url: https://github.com/srmainwaring/micro-ROS-Agent.git
+    version: cmake-macos
+  micro_ros_msgs:
+    type: git
+    url: https://github.com/micro-ROS/micro_ros_msgs.git
     version: humble
+  microxrcedds_gen:
+    type: git
+    url: https://github.com/eProsima/Micro-XRCE-DDS-Gen.git
+    version: master
   ros_gz:
     type: git
     url: https://github.com/gazebosim/ros_gz.git
     version: ros2
   sdformat_urdf:
     type: git
-    url: https://github.com/ros/sdformat_urdf.git
-    version: ros2
+    url: https://github.com/srmainwaring/sdformat_urdf.git
+    version: srmainwaring/humble-garden
