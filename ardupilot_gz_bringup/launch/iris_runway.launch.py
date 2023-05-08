@@ -85,7 +85,7 @@ def generate_launch_description() -> LaunchDescription:
                 "name": f"iris{i}",
                 "x": f"{pos_x}",
                 "y": f"{pos_y}",
-                "z": "0.194923",
+                "z": "0.2",
                 "R": "0.0",
                 "P": "0.0",
                 "Y": f"{math.pi / 2.0}",
