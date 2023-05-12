@@ -95,9 +95,9 @@ mavproxy.py --master udp:127.0.0.1:14550  --console --map
 ```bash
 $ ros2 topic list
 /ap/battery/battery0
-/ap/clock
 /ap/navsat/navsat0
 /ap/tf_static
+/ap/time
 /clicked_point
 /clock
 /goal_pose
