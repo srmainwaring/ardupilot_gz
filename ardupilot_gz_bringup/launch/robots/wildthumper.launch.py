@@ -131,6 +131,12 @@ def generate_launch_description():
     )
     with open(sdf_file, "r") as infp:
         robot_desc = infp.read()
+
+        # substitute `models://` with `package://ardupilot_sitl_models/models/`
+        # for sdformat_urdf plugin used by robot_state_publisher
+        robot_desc = robot_desc.replace(
+            "model://wildthumper",
+            "package://ardupilot_sitl_models/models/wildthumper")
         # print(robot_desc)
 
     # Publish /tf and /tf_static.
