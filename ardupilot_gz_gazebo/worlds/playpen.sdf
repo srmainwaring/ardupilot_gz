@@ -62,6 +62,5 @@
       <pose degrees="true">0 0 0 0 0 0</pose>
       <uri>model://rover_playpen</uri>
     </include>
-
   </world>
 </sdf>

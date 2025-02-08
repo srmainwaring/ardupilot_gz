@@ -77,6 +77,10 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     # and iris_with_gimbal models. Then the ardupilot_gazebo ros2 branch
     # should no longer be required.
 
+    # Ensure robot has the correct name
+    robot_name = LaunchConfiguration("robot_name").perform(context)
+    robot_desc = robot_desc.replace("<name>iris</name>", f"<name>{robot_name}</name>")
+
     # Ensure the ArduPilot plugin and SITL have a consistent sim_address
     sim_address = LaunchConfiguration("sim_address").perform(context)
     robot_desc = robot_desc.replace(
@@ -84,162 +88,56 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
         f"<fdm_addr>{sim_address}</fdm_addr>",
     )
 
-    # Publish /tf and /tf_static.
-    robot_state_publisher = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        name="robot_state_publisher",
-        output="both",
-        parameters=[
-            {"robot_description": robot_desc},
-            {"frame_prefix": ""},
-        ],
-    )
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".yaml")
+    sdf_file_modified = temp_file.name
 
-    # Spawn robot
-    spawn_robot = Node(
-        package="ros_gz_sim",
-        executable="create",
-        namespace=LaunchConfiguration("robot_name"),
-        arguments=[
-            "-world",
-            "",
-            "-param",
-            "",
-            "-name",
-            LaunchConfiguration("robot_name"),
-            "-topic",
-            "/robot_description",
-            "-x",
-            LaunchConfiguration("x"),
-            "-y",
-            LaunchConfiguration("y"),
-            "-z",
-            LaunchConfiguration("z"),
-            "-R",
-            LaunchConfiguration("R"),
-            "-P",
-            LaunchConfiguration("P"),
-            "-Y",
-            LaunchConfiguration("Y"),
-        ],
-        output="screen",
-    )
+    with open(sdf_file_modified, "w") as temp_file:
+        temp_file.write(robot_desc)
 
-    # Bridge.
-    config_template_file = os.path.join(
+    bridge_config_file = os.path.join(
         pkg_project_bringup, "config", "iris_bridge.yaml"
     )
-    with open(config_template_file, "r") as infp:
-        config = infp.read()
 
-    world_name = LaunchConfiguration("world_name").perform(context)
-    config = config.replace(
-        "{{ world_name }}",
-        f"{world_name}",
-    )
-
-    robot_name = LaunchConfiguration("robot_name").perform(context)
-    config = config.replace(
-        "{{ robot_name }}",
-        f"{robot_name}",
-    )
-
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".yaml")
-    config_file = temp_file.name
-    with open(config_file, "w") as outfp:
-        outfp.write(config)
-
-    bridge = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
-        parameters=[
-            {
-                "config_file": config_file,
-                "qos_overrides./tf_static.publisher.durability": "transient_local",
-            }
-        ],
-        output="screen",
-    )
-
-    # Relay - use instead of transform when Gazebo is only publishing odom -> base_link
-    topic_tools_tf = Node(
-        package="topic_tools",
-        executable="relay",
-        arguments=[
-            "/gz/tf",
-            "/tf",
-        ],
-        output="screen",
-        respawn=False,
-        condition=IfCondition(LaunchConfiguration("use_gz_tf")),
-    )
-
-    on_robot_state_publisher_start = RegisterEventHandler(
-        OnProcessStart(target_action=robot_state_publisher, on_start=[spawn_robot])
-    )
-
-    on_bridge_start = RegisterEventHandler(
-        OnProcessStart(target_action=bridge, on_start=[topic_tools_tf])
-    )
-
-    return [
-        robot_state_publisher,
-        bridge,
-        on_robot_state_publisher_start,
-        on_bridge_start,
-    ]
-
-
-def generate_launch_description():
-    """Generate a launch description for a iris quadcopter."""
-    launch_arguments = generate_launch_arguments()
-
-    # Include component launch files.
-    sitl_dds = IncludeLaunchDescription(
+    robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ardupilot_sitl"),
+                        FindPackageShare("ardupilot_gz_bringup"),
                         "launch",
-                        "sitl_dds_udp.launch.py",
+                        "robots",
+                        "robot.launch.py",
                     ]
                 ),
             ]
         ),
         launch_arguments={
+            "use_gz_tf": LaunchConfiguration("use_gz_tf"),
+            "sdf_file": sdf_file_modified,
+            "bridge_config_file": bridge_config_file,
+            "command": "arducopter",
+            "robot_name": robot_name,
+            "world_name": LaunchConfiguration("world_name"),
             "model": LaunchConfiguration("model"),
             "defaults": LaunchConfiguration("defaults"),
             "synthetic_clock": LaunchConfiguration("synthetic_clock"),
+            "sim_address": LaunchConfiguration("sim_address"),
+            "x": LaunchConfiguration("x"),
+            "y": LaunchConfiguration("y"),
+            "z": LaunchConfiguration("z"),
+            "R": LaunchConfiguration("R"),
+            "P": LaunchConfiguration("P"),
+            "Y": LaunchConfiguration("Y"),
+            "instance": LaunchConfiguration("instance"),
+            "sysid": LaunchConfiguration("sysid"),
         }.items(),
     )
 
-    # Ensure `SDF_PATH` is populated as `sdformat_urdf`` uses this rather
-    # than `GZ_SIM_RESOURCE_PATH` to locate resources.
-    if "GZ_SIM_RESOURCE_PATH" in os.environ:
-        gz_sim_resource_path = os.environ["GZ_SIM_RESOURCE_PATH"]
-
-        if "SDF_PATH" in os.environ:
-            sdf_path = os.environ["SDF_PATH"]
-            os.environ["SDF_PATH"] = sdf_path + ":" + gz_sim_resource_path
-        else:
-            os.environ["SDF_PATH"] = gz_sim_resource_path
-
-    robot_launch_actions = OpaqueFunction(function=generate_robot_launch_actions)
-
-    return LaunchDescription(
-        launch_arguments
-        + [
-            sitl_dds,
-            robot_launch_actions,
-        ]
-    )
+    return [robot]
 
 
 def generate_launch_arguments() -> List[DeclareLaunchArgument]:
     """Generate a list of launch arguments."""
-    pkg_ardupilot_gazebo = get_package_share_directory("ardupilot_gazebo")
     pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
 
     return [
@@ -260,8 +158,9 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
                 )
                 + ","
                 + os.path.join(
-                    pkg_ardupilot_gazebo,
+                    pkg_ardupilot_sitl,
                     "config",
+                    "default_params",
                     "gazebo-iris-gimbal.parm",
                 )
                 + ","
@@ -270,7 +169,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
                     "config",
                     "default_params",
                     "dds_udp.parm",
-                )
+                ),
             ),
             description="Set path to default params for the iris with DDS.",
         ),
@@ -278,11 +177,26 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
             "synthetic_clock",
             default_value="True",
         ),
+        DeclareLaunchArgument(
+            "sim_address",
+            default_value="127.0.0.1",
+        ),
+        DeclareLaunchArgument(
+            "instance",
+            default_value="0",
+            description="Set instance of SITL "
+                        "(adds 10*instance to all port numbers).",
+        ),
+        DeclareLaunchArgument(
+            "sysid",
+            default_value="",
+            description="Set SYSID_THISMAV.",
+        ),
         # topic_tools_tf
         DeclareLaunchArgument(
             "use_gz_tf", default_value="true", description="Use Gazebo TF."
         ),
-        # bridge, spawn_robot
+        # Gazebo model launch arguments.
         DeclareLaunchArgument(
             "world_name",
             default_value="runway",
@@ -324,3 +238,13 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
             description="The initial yaw angle (radians).",
         ),
     ]
+
+
+def generate_launch_description() -> LaunchDescription:
+    """Generate a launch description for a iris quadcopter."""
+
+    launch_arguments = generate_launch_arguments()
+
+    return LaunchDescription(
+        launch_arguments + [OpaqueFunction(function=generate_robot_launch_actions)]
+    )

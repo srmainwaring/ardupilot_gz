@@ -142,6 +142,13 @@ This simulation includes a iris in a warehouse setting.
 ros2 launch ardupilot_gz_bringup iris_warehouse.launch.py rviz:=true use_gz_tf:=true
 ```
 
+### 4. Multi-vehicle simulation
+
+This simulation includes the three currently available models (iris camera, iris lidar, and wild thumper) but can be expanded to an abitrary amount of robots by changing the `robots` list in the launch file.
+
+```bash
+ros2 launch ardupilot_gz_bringup multiagent.launch.py rviz:=true use_gz_tf:=true
+```
 
 ## Notes
 
