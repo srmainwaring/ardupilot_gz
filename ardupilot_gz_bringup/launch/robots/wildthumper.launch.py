@@ -37,10 +37,13 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 
+from launch import LaunchContext
 from launch import LaunchDescription
+
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.actions import RegisterEventHandler
+from launch.actions import OpaqueFunction
 
 from launch.conditions import IfCondition
 
@@ -54,45 +57,11 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-def generate_launch_description():
-    """Generate a launch description for a wild thumper rover."""
-    pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
+def generate_state_pub_and_ros_gz_bridge(context: LaunchContext, *args, **kwargs):
+    """Launch the robot_state_publisher and ros_gz bridge nodes."""
+
     pkg_ardupilot_sitl_models = get_package_share_directory("ardupilot_sitl_models")
     pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
-
-    # Include component launch files.
-    sitl_dds = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [
-                PathJoinSubstitution(
-                    [
-                        FindPackageShare("ardupilot_sitl"),
-                        "launch",
-                        "sitl_dds_udp.launch.py",
-                    ]
-                ),
-            ]
-        ),
-        launch_arguments={
-            "command": LaunchConfiguration("command"),
-            "model": LaunchConfiguration("model"),
-            "defaults": LaunchConfiguration("defaults"),
-            "synthetic_clock": LaunchConfiguration("synthetic_clock"),
-        }.items(),
-    )
-
-    # Robot description.
-
-    # Ensure `SDF_PATH` is populated as `sdformat_urdf`` uses this rather
-    # than `GZ_SIM_RESOURCE_PATH` to locate resources.
-    if "GZ_SIM_RESOURCE_PATH" in os.environ:
-        gz_sim_resource_path = os.environ["GZ_SIM_RESOURCE_PATH"]
-
-        if "SDF_PATH" in os.environ:
-            sdf_path = os.environ["SDF_PATH"]
-            os.environ["SDF_PATH"] = sdf_path + ":" + gz_sim_resource_path
-        else:
-            os.environ["SDF_PATH"] = gz_sim_resource_path
 
     # Load SDF file.
     sdf_file = os.path.join(
@@ -110,6 +79,13 @@ def generate_launch_description():
         robot_desc = robot_desc.replace(
             "model://wildthumper_with_lidar",
             "package://ardupilot_sitl_models/models/wildthumper_with_lidar",
+        )
+
+        # Ensure the ArduPilot plugin and SITL have a consistent sim_address
+        sim_address = LaunchConfiguration("sim_address").perform(context)
+        robot_desc = robot_desc.replace(
+            "<fdm_addr>127.0.0.1</fdm_addr>",
+            f"<fdm_addr>{sim_address}</fdm_addr>",
         )
 
     # Publish /tf and /tf_static.
@@ -152,6 +128,54 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("use_gz_tf")),
     )
 
+    on_bridge_start = RegisterEventHandler(
+        OnProcessStart(target_action=bridge, on_start=[topic_tools_tf])
+    )
+
+    return [robot_state_publisher, bridge, on_bridge_start]
+
+
+def generate_launch_description():
+    """Generate a launch description for a wild thumper rover."""
+    pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
+    pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
+
+    # Include component launch files.
+    sitl_dds = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare("ardupilot_sitl"),
+                        "launch",
+                        "sitl_dds_udp.launch.py",
+                    ]
+                ),
+            ]
+        ),
+        launch_arguments={
+            "command": LaunchConfiguration("command"),
+            "model": LaunchConfiguration("model"),
+            "defaults": LaunchConfiguration("defaults"),
+            "synthetic_clock": LaunchConfiguration("synthetic_clock"),
+        }.items(),
+    )
+
+    # Ensure `SDF_PATH` is populated as `sdformat_urdf`` uses this rather
+    # than `GZ_SIM_RESOURCE_PATH` to locate resources.
+    if "GZ_SIM_RESOURCE_PATH" in os.environ:
+        gz_sim_resource_path = os.environ["GZ_SIM_RESOURCE_PATH"]
+
+        if "SDF_PATH" in os.environ:
+            sdf_path = os.environ["SDF_PATH"]
+            os.environ["SDF_PATH"] = sdf_path + ":" + gz_sim_resource_path
+        else:
+            os.environ["SDF_PATH"] = gz_sim_resource_path
+
+    state_pub_and_ros_gz_bridge = OpaqueFunction(
+        function=generate_state_pub_and_ros_gz_bridge
+    )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -191,10 +215,6 @@ def generate_launch_description():
                 "use_gz_tf", default_value="true", description="Use Gazebo TF."
             ),
             sitl_dds,
-            robot_state_publisher,
-            bridge,
-            RegisterEventHandler(
-                OnProcessStart(target_action=bridge, on_start=[topic_tools_tf])
-            ),
+            state_pub_and_ros_gz_bridge,
         ]
     )
