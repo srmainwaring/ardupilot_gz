@@ -54,7 +54,6 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-
 def generate_launch_description():
     """Generate a launch description for a iris quadcopter."""
     pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
@@ -75,29 +74,9 @@ def generate_launch_description():
             ]
         ),
         launch_arguments={
-            "transport": "udp4",
-            "port": "2019",
-            "synthetic_clock": "True",
-            "wipe": "False",
-            "model": "json",
-            "speedup": "1",
-            "slave": "0",
-            "instance": "0",
-            "defaults": os.path.join(
-                pkg_ardupilot_gazebo,
-                "config",
-                "gazebo-iris-gimbal.parm",
-            )
-            + ","
-            + os.path.join(
-                pkg_ardupilot_sitl,
-                "config",
-                "default_params",
-                "dds_udp.parm",
-            ),
-            "sim_address": "127.0.0.1",
-            "master": "tcp:127.0.0.1:5760",
-            "sitl": "127.0.0.1:5501",
+            "model": LaunchConfiguration("model"),
+            "defaults": LaunchConfiguration("defaults"),
+            "synthetic_clock": LaunchConfiguration("synthetic_clock"),
         }.items(),
     )
 
@@ -183,18 +162,40 @@ def generate_launch_description():
     return LaunchDescription(
         [
             DeclareLaunchArgument(
+                "model",
+                default_value="json",
+                description="Set simulation model. Set default to 'json' for Gazebo.",
+            ),
+            DeclareLaunchArgument(
+                "defaults",
+                default_value=(
+                    os.path.join(
+                        pkg_ardupilot_gazebo,
+                        "config",
+                        "gazebo-iris-gimbal.parm",
+                    )
+                    + ","
+                    + os.path.join(
+                        pkg_ardupilot_sitl,
+                        "config",
+                        "default_params",
+                        "dds_udp.parm",
+                    )
+                ),
+                description="Set path to default params for the iris with DDS.",
+            ),
+            DeclareLaunchArgument(
+                "synthetic_clock",
+                default_value="True",
+            ),
+            DeclareLaunchArgument(
                 "use_gz_tf", default_value="true", description="Use Gazebo TF."
             ),
             sitl_dds,
             robot_state_publisher,
             bridge,
             RegisterEventHandler(
-                OnProcessStart(
-                    target_action=bridge,
-                    on_start=[
-                        topic_tools_tf
-                    ]
-                )
+                OnProcessStart(target_action=bridge, on_start=[topic_tools_tf])
             ),
         ]
     )
