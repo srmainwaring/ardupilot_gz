@@ -63,13 +63,12 @@ def generate_launch_description():
             ]
         ),
         launch_arguments={
-            "model": "iris_with_lidar",
-            "name": "iris",
-            "x": "0",
-            "y": "0",
-            "z": "0.194923",
-            "R": "0.0",
-            "P": "0.0",
+            "name": LaunchConfiguration("name"),
+            "x": LaunchConfiguration("x"),
+            "y": LaunchConfiguration("y"),
+            "z": LaunchConfiguration("z"),
+            "R": LaunchConfiguration("R"),
+            "P": LaunchConfiguration("P"),
             "lidar_dim": LaunchConfiguration("lidar_dim"),
         }.items(),
     )
@@ -105,13 +104,19 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            DeclareLaunchArgument(
-                "rviz", default_value="true", description="Open RViz."
-            ),
+            DeclareLaunchArgument("name", default_value="iris"),
+            DeclareLaunchArgument("x", default_value="0"),
+            DeclareLaunchArgument("y", default_value="0"),
+            DeclareLaunchArgument("z", default_value="0.194923"),
+            DeclareLaunchArgument("R", default_value="0"),
+            DeclareLaunchArgument("P", default_value="0"),
             DeclareLaunchArgument(
                 "lidar_dim",
                 default_value="3",
                 description="Whether to use a 2D or 3D lidar",
+            ),
+            DeclareLaunchArgument(
+                "rviz", default_value="true", description="Open RViz."
             ),
             gz_sim_server,
             gz_sim_gui,
