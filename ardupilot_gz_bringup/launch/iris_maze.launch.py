@@ -71,6 +71,7 @@ def generate_launch_description():
             "P": LaunchConfiguration("P"),
             "lidar_dim": LaunchConfiguration("lidar_dim"),
         }.items(),
+        condition=IfCondition(LaunchConfiguration("use_iris")),
     )
 
     # Gazebo.
@@ -82,6 +83,7 @@ def generate_launch_description():
             "gz_args": "-v4 -s -r "
             + f'{Path(pkg_project_gazebo) / "worlds" / "iris_maze.sdf"}'
         }.items(),
+        condition=IfCondition(LaunchConfiguration("use_gz_sim_server")),
     )
 
     gz_sim_gui = IncludeLaunchDescription(
@@ -89,6 +91,7 @@ def generate_launch_description():
             f'{Path(pkg_ros_gz_sim) / "launch" / "gz_sim.launch.py"}'
         ),
         launch_arguments={"gz_args": "-v4 -g"}.items(),
+        condition=IfCondition(LaunchConfiguration("use_gz_sim_gui")),
     )
 
     # RViz.
@@ -114,6 +117,21 @@ def generate_launch_description():
                 "lidar_dim",
                 default_value="3",
                 description="Whether to use a 2D or 3D lidar",
+            ),
+            DeclareLaunchArgument(
+                "use_gz_sim_server",
+                default_value="true",
+                description="Run the Gazebo server.",
+            ),
+            DeclareLaunchArgument(
+                "use_gz_sim_gui",
+                default_value="true",
+                description="Run the Gazebo GUI.",
+            ),
+            DeclareLaunchArgument(
+                "use_iris",
+                default_value="true",
+                description="Run SITL+DDS+ROS for the iris.",
             ),
             DeclareLaunchArgument(
                 "rviz", default_value="true", description="Open RViz."
