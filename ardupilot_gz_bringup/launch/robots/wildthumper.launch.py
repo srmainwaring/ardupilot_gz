@@ -155,6 +155,11 @@ def generate_launch_description():
     return LaunchDescription(
         [
             DeclareLaunchArgument(
+                "command",
+                default_value="ardurover",
+                description="Run ArduPilot SITL.",
+            ),
+            DeclareLaunchArgument(
                 "model",
                 default_value="json",
                 description="Set simulation model. Set default to 'json' for Gazebo.",
