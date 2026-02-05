@@ -37,8 +37,13 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import (DeclareLaunchArgument, IncludeLaunchDescription,
-                            LogInfo, OpaqueFunction, RegisterEventHandler)
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    LogInfo,
+    OpaqueFunction,
+    RegisterEventHandler,
+)
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -59,7 +64,7 @@ def launch_spawn_robot(context):
     rot_y = LaunchConfiguration("Y")
 
     # spawn robot
-    spawn_robot =  Node(
+    spawn_robot = Node(
         package="ros_gz_sim",
         executable="create",
         namespace=name,
@@ -93,9 +98,11 @@ def launch_spawn_robot(context):
 def launch_state_pub_with_bridge(context):
     # Robot description and ros_gz bridge config chosen based on passed lidar_dimension argument
     lidar_dim = LaunchConfiguration("lidar_dim").perform(context)
-    pkg_ardupilot_gz_description = get_package_share_directory("ardupilot_gz_description")
+    pkg_ardupilot_gz_description = get_package_share_directory(
+        "ardupilot_gz_description"
+    )
     pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
-    
+
     sdf_file = os.path.join(
         pkg_ardupilot_gz_description, "models", "iris_with_lidar", "model.sdf"
     )
@@ -109,17 +116,22 @@ def launch_state_pub_with_bridge(context):
     # Load SDF file and choose ros_gz bridge config based on lidar dimensions
     if lidar_dim == "2":
         log = LogInfo(msg="Using iris_with_2d_lidar_model ")
-        robot_desc = robot_desc.replace("<uri>model://lidar_2d</uri>", "<uri>model://lidar_2d</uri>")
+        robot_desc = robot_desc.replace(
+            "<uri>model://lidar_2d</uri>", "<uri>model://lidar_2d</uri>"
+        )
         ros_gz_bridge_config = "iris_2Dlidar_bridge.yaml"
     elif lidar_dim == "3":
         log = LogInfo(msg="Using iris_with_3d_lidar_model")
-        robot_desc = robot_desc.replace("<uri>model://lidar_2d</uri>", "<uri>model://lidar_3d</uri>")
+        robot_desc = robot_desc.replace(
+            "<uri>model://lidar_2d</uri>", "<uri>model://lidar_3d</uri>"
+        )
         ros_gz_bridge_config = "iris_3Dlidar_bridge.yaml"
     else:
         log = LogInfo(msg="ERROR: unknown lidar dimensions! Defaulting to 3d lidar")
-        robot_desc = robot_desc.replace("<uri>model://lidar_2d</uri>", "<uri>model://lidar_3d</uri>")
+        robot_desc = robot_desc.replace(
+            "<uri>model://lidar_2d</uri>", "<uri>model://lidar_3d</uri>"
+        )
         ros_gz_bridge_config = "iris_3Dlidar_bridge.yaml"
-
 
     # Publish /tf and /tf_static.
     robot_state_publisher = Node(
@@ -162,34 +174,52 @@ def launch_state_pub_with_bridge(context):
     )
 
     event = RegisterEventHandler(
-                OnProcessStart(
-                    target_action=bridge,
-                    on_start=[
-                        topic_tools_tf
-                    ]
-                )
-            )
+        OnProcessStart(target_action=bridge, on_start=[topic_tools_tf])
+    )
 
     return [log, robot_state_publisher, bridge, event]
 
+
 def generate_launch_arguments():
     """Generate a list of launch arguments"""
+    pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
+
     return [
         DeclareLaunchArgument(
-            "use_gz_tf", 
-            default_value="true", 
-            description="Use Gazebo TF."
+            "model",
+            default_value="json",
+            description="Set simulation model. Set default to 'json' for Gazebo.",
+        ),
+        DeclareLaunchArgument(
+            "defaults",
+            default_value=(
+                os.path.join(
+                    pkg_ardupilot_sitl,
+                    "config",
+                    "default_params",
+                    "gazebo-iris.parm",
+                )
+                + ","
+                + os.path.join(
+                    pkg_ardupilot_sitl,
+                    "config",
+                    "default_params",
+                    "dds_udp.parm",
+                ),
+            ),
+            description="Set path to default params for the iris with DDS.",
+        ),
+        DeclareLaunchArgument(
+            "synthetic_clock",
+            default_value="True",
+        ),
+        DeclareLaunchArgument(
+            "use_gz_tf", default_value="true", description="Use Gazebo TF."
         ),
         DeclareLaunchArgument(
             "lidar_dim",
             default_value="3",
             description="Whether to use a 2D or 3D lidar",
-        ),
-        # Gazebo model launch arguments.
-        DeclareLaunchArgument(
-            "model",
-            default_value="iris_with_lidar",
-            description="Name or filepath of the model to load.",
         ),
         DeclareLaunchArgument(
             "name",
@@ -228,12 +258,11 @@ def generate_launch_arguments():
         ),
     ]
 
+
 def generate_launch_description():
     """Generate a launch description for a iris quadrotor"""
 
     launch_arguments = generate_launch_arguments()
-
-    pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
 
     # Include component launch files.
     sitl_dds = IncludeLaunchDescription(
@@ -249,30 +278,9 @@ def generate_launch_description():
             ]
         ),
         launch_arguments={
-            "transport": "udp4",
-            "port": "2019",
-            "synthetic_clock": "True",
-            "wipe": "False",
-            "model": "json",
-            "speedup": "1",
-            "slave": "0",
-            "instance": "0",
-            "defaults": os.path.join(
-                pkg_ardupilot_sitl,
-                "config",
-                "default_params",
-                "gazebo-iris.parm",
-            )
-            + ","
-            + os.path.join(
-                pkg_ardupilot_sitl,
-                "config",
-                "default_params",
-                "dds_udp.parm",
-            ),
-            "sim_address": "127.0.0.1",
-            "master": "tcp:127.0.0.1:5760",
-            "sitl": "127.0.0.1:5501",
+            "model": LaunchConfiguration("model"),
+            "defaults": LaunchConfiguration("defaults"),
+            "synthetic_clock": LaunchConfiguration("synthetic_clock"),
         }.items(),
     )
 
