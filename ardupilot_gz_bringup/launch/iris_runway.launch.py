@@ -53,7 +53,7 @@ def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
 
     # Iris.
-    iris = IncludeLaunchDescription(
+    robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
                 PathJoinSubstitution(
@@ -119,7 +119,7 @@ def generate_launch_description():
             ),
             gz_sim_server,
             gz_sim_gui,
-            iris,
+            robot,
             rviz,
         ]
     )

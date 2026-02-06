@@ -253,10 +253,10 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
         DeclareLaunchArgument(
             "use_gz_tf", default_value="true", description="Use Gazebo TF."
         ),
-        # spawn_robot
+        # spawn_robot - the robot name must agree with the name used in the config/{robot}.yaml
         DeclareLaunchArgument(
             "robot_name",
-            default_value="iris_with_gimbal",
+            default_value="iris",
             description="Name for the model instance.",
         ),
         DeclareLaunchArgument(
