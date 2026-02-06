@@ -81,7 +81,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             "gz_args": "-v4 -s -r "
-            + f'{Path(pkg_project_gazebo) / "worlds" / "iris_maze.sdf"}'
+            + f'{Path(pkg_project_gazebo) / "worlds" / "maze.sdf"}'
         }.items(),
         condition=IfCondition(LaunchConfiguration("use_gz_sim_server")),
     )
