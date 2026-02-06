@@ -35,6 +35,7 @@ sitl:=127.0.0.1:5501
 """
 from typing import List
 
+import math
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -285,7 +286,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
         ),
         DeclareLaunchArgument(
             "Y",
-            default_value="0.0",
+            default_value=f"{math.radians(90)}",
             description="The initial yaw angle (radians).",
         ),
     ]
