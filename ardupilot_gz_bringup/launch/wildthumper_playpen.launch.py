@@ -66,7 +66,7 @@ def generate_launch_description():
                 ),
             ]
         ),
-        condition=IfCondition(LaunchConfiguration("use_rover")),
+        condition=IfCondition(LaunchConfiguration("spawn_robot")),
     )
 
     # Gazebo.
@@ -110,9 +110,9 @@ def generate_launch_description():
                 description="Run the Gazebo GUI.",
             ),
             DeclareLaunchArgument(
-                "use_rover",
+                "spawn_robot",
                 default_value="true",
-                description="Run SITL+DDS+ROS for the rover.",
+                description="Spawn the robot and start SITL+ROS.",
             ),
             DeclareLaunchArgument(
                 "rviz", default_value="true", description="Open RViz."
