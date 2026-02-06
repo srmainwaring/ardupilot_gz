@@ -71,7 +71,7 @@ def generate_launch_description():
             "P": LaunchConfiguration("P"),
             "lidar_dim": LaunchConfiguration("lidar_dim"),
         }.items(),
-        condition=IfCondition(LaunchConfiguration("use_iris")),
+        condition=IfCondition(LaunchConfiguration("spawn_robot")),
     )
 
     # Gazebo.
@@ -129,9 +129,9 @@ def generate_launch_description():
                 description="Run the Gazebo GUI.",
             ),
             DeclareLaunchArgument(
-                "use_iris",
+                "spawn_robot",
                 default_value="true",
-                description="Run SITL+DDS+ROS for the iris.",
+                description="Spawn the robot and start SITL+ROS.",
             ),
             DeclareLaunchArgument(
                 "rviz", default_value="true", description="Open RViz."
