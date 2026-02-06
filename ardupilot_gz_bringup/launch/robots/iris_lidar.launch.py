@@ -229,32 +229,32 @@ def generate_launch_arguments():
         DeclareLaunchArgument(
             "x",
             default_value="0",
-            description="The intial 'x' position (m).",
+            description="The initial 'x' position (m).",
         ),
         DeclareLaunchArgument(
             "y",
             default_value="0",
-            description="The intial 'y' position (m).",
+            description="The initial 'y' position (m).",
         ),
         DeclareLaunchArgument(
             "z",
             default_value="0",
-            description="The intial 'z' position (m).",
+            description="The initial 'z' position (m).",
         ),
         DeclareLaunchArgument(
             "R",
             default_value="0",
-            description="The intial roll angle (radians).",
+            description="The initial roll angle (radians).",
         ),
         DeclareLaunchArgument(
             "P",
             default_value="0",
-            description="The intial pitch angle (radians).",
+            description="The initial pitch angle (radians).",
         ),
         DeclareLaunchArgument(
             "Y",
             default_value="0",
-            description="The intial yaw angle (radians).",
+            description="The initial yaw angle (radians).",
         ),
     ]
 
