@@ -230,12 +230,11 @@ def generate_launch_description():
         else:
             os.environ["SDF_PATH"] = gz_sim_resource_path
 
-    opfunc_robot_state_publisher = OpaqueFunction(function=launch_state_pub_with_bridge)
-    opfunc_spawn_robot = OpaqueFunction(function=launch_spawn_robot)
+    robot_launch_actions = OpaqueFunction(function=generate_robot_launch_actions)
+
     ld = LaunchDescription(launch_arguments)
     ld.add_action(sitl_dds)
-    ld.add_action(opfunc_robot_state_publisher)
-    ld.add_action(opfunc_spawn_robot)
+    ld.add_action(robot_launch_actions)
 
     return ld
 
