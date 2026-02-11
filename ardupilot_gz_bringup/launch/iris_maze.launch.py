@@ -49,7 +49,7 @@ def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
 
     # Iris.
-    iris = IncludeLaunchDescription(
+    robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [
                 PathJoinSubstitution(
@@ -62,15 +62,6 @@ def generate_launch_description():
                 ),
             ]
         ),
-        launch_arguments={
-            "name": LaunchConfiguration("name"),
-            "x": LaunchConfiguration("x"),
-            "y": LaunchConfiguration("y"),
-            "z": LaunchConfiguration("z"),
-            "R": LaunchConfiguration("R"),
-            "P": LaunchConfiguration("P"),
-            "lidar_dim": LaunchConfiguration("lidar_dim"),
-        }.items(),
         condition=IfCondition(LaunchConfiguration("spawn_robot")),
     )
 
@@ -107,17 +98,6 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            DeclareLaunchArgument("name", default_value="iris"),
-            DeclareLaunchArgument("x", default_value="0"),
-            DeclareLaunchArgument("y", default_value="0"),
-            DeclareLaunchArgument("z", default_value="0.194923"),
-            DeclareLaunchArgument("R", default_value="0"),
-            DeclareLaunchArgument("P", default_value="0"),
-            DeclareLaunchArgument(
-                "lidar_dim",
-                default_value="3",
-                description="Whether to use a 2D or 3D lidar",
-            ),
             DeclareLaunchArgument(
                 "use_gz_sim_server",
                 default_value="true",
@@ -138,7 +118,7 @@ def generate_launch_description():
             ),
             gz_sim_server,
             gz_sim_gui,
-            iris,
+            robot,
             rviz,
         ]
     )
