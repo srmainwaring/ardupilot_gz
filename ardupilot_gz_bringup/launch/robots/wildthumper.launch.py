@@ -71,23 +71,23 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     with open(sdf_file, "r") as infp:
         robot_desc = infp.read()
 
-        # Substitute `models://` with `package://ardupilot_sitl_models/models/`
-        # for sdformat_urdf plugin used by robot_state_publisher
-        robot_desc = robot_desc.replace(
-            "model://wildthumper", "package://ardupilot_sitl_models/models/wildthumper"
-        )
+    # Substitute `models://` with `package://ardupilot_sitl_models/models/`
+    # for sdformat_urdf plugin used by robot_state_publisher
+    robot_desc = robot_desc.replace(
+        "model://wildthumper", "package://ardupilot_sitl_models/models/wildthumper"
+    )
 
-        robot_desc = robot_desc.replace(
-            "model://wildthumper_with_lidar",
-            "package://ardupilot_sitl_models/models/wildthumper_with_lidar",
-        )
+    robot_desc = robot_desc.replace(
+        "model://wildthumper_with_lidar",
+        "package://ardupilot_sitl_models/models/wildthumper_with_lidar",
+    )
 
-        # Ensure the ArduPilot plugin and SITL have a consistent sim_address
-        sim_address = LaunchConfiguration("sim_address").perform(context)
-        robot_desc = robot_desc.replace(
-            "<fdm_addr>127.0.0.1</fdm_addr>",
-            f"<fdm_addr>{sim_address}</fdm_addr>",
-        )
+    # Ensure the ArduPilot plugin and SITL have a consistent sim_address
+    sim_address = LaunchConfiguration("sim_address").perform(context)
+    robot_desc = robot_desc.replace(
+        "<fdm_addr>127.0.0.1</fdm_addr>",
+        f"<fdm_addr>{sim_address}</fdm_addr>",
+    )
 
     # Publish /tf and /tf_static.
     robot_state_publisher = Node(
