@@ -72,16 +72,16 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     with open(sdf_file, "r") as infp:
         robot_desc = infp.read()
 
-        # TODO: add model:// => package:// remapping for the iris
-        # and iris_with_gimbal models. Then the ardupilot_gazebo ros2 branch
-        # should no longer be required.
+    # TODO: add model:// => package:// remapping for the iris
+    # and iris_with_gimbal models. Then the ardupilot_gazebo ros2 branch
+    # should no longer be required.
 
-        # Ensure the ArduPilot plugin and SITL have a consistent sim_address
-        sim_address = LaunchConfiguration("sim_address").perform(context)
-        robot_desc = robot_desc.replace(
-            "<fdm_addr>127.0.0.1</fdm_addr>",
-            f"<fdm_addr>{sim_address}</fdm_addr>",
-        )
+    # Ensure the ArduPilot plugin and SITL have a consistent sim_address
+    sim_address = LaunchConfiguration("sim_address").perform(context)
+    robot_desc = robot_desc.replace(
+        "<fdm_addr>127.0.0.1</fdm_addr>",
+        f"<fdm_addr>{sim_address}</fdm_addr>",
+    )
 
     # Publish /tf and /tf_static.
     robot_state_publisher = Node(
