@@ -284,7 +284,7 @@
 
 
     <include merge="true">
-      <uri>model://lidar_2d</uri>
+      <uri>model://lidar_3d</uri>
       <name>base_scan</name>
       <pose>0 0 0.075077 0 0 0</pose>    
     </include>
