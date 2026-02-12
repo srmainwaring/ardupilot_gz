@@ -66,6 +66,10 @@ def generate_launch_description():
                 ),
             ]
         ),
+        launch_arguments={
+            "world_name": LaunchConfiguration("world_name"),
+            "robot_name": LaunchConfiguration("robot_name"),
+        }.items(),
         condition=IfCondition(LaunchConfiguration("spawn_robot")),
     )
 
@@ -102,6 +106,16 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            DeclareLaunchArgument(
+                "world_name",
+                default_value="warehouse",
+                description="Name for the world instance.",
+            ),
+            DeclareLaunchArgument(
+                "robot_name",
+                default_value="iris",
+                description="Name for the model instance.",
+            ),
             DeclareLaunchArgument(
                 "use_gz_sim_server",
                 default_value="true",
