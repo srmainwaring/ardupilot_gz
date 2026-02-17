@@ -81,8 +81,8 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     )
 
     robot_desc = robot_desc.replace(
-        "model://iris_with_arm",
-        "package://ardupilot_gz_description/models/iris_with_arm",
+        "model://learm",
+        "package://ardupilot_gz_description/models/learm",
     )
 
     # Ensure the ArduPilot plugin and SITL have a consistent sim_address
