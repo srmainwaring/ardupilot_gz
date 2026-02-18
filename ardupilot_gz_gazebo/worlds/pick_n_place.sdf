@@ -1,0 +1,302 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="pick_n_place">
+    <physics name="1ms" type="ignore">
+      <max_step_size>0.002</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+      filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+    <plugin filename="gz-sim-air-pressure-system"
+      name="gz::sim::systems::AirPressure">
+    </plugin>
+    <plugin filename="gz-sim-air-speed-system"
+      name="gz::sim::systems::AirSpeed">
+    </plugin>
+    <plugin filename="gz-sim-altimeter-system"
+      name="gz::sim::systems::Altimeter">
+    </plugin>
+    <plugin filename="gz-sim-imu-system"
+      name="gz::sim::systems::Imu">
+    </plugin>
+    <plugin filename="gz-sim-magnetometer-system"
+      name="gz::sim::systems::Magnetometer">
+    </plugin>
+    <plugin filename="gz-sim-navsat-system"
+      name="gz::sim::systems::NavSat">
+    </plugin>
+
+    <scene>
+      <ambient>1.0 1.0 1.0</ambient>
+      <background>0.8 0.8 0.8</background>
+      <sky></sky>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.8 0.8 0.8 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <spherical_coordinates>
+      <latitude_deg>-35.3632621</latitude_deg>
+      <longitude_deg>149.1652374</longitude_deg>
+      <elevation>10.0</elevation>
+      <heading_deg>0</heading_deg>
+      <surface_model>EARTH_WGS84</surface_model>
+    </spherical_coordinates>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.8 0.8 0.8 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="learm_fixed">
+      <include>
+        <uri>model://learm</uri>
+        <name>learm</name>
+        <pose degrees="true">0.397 0 1.032 0 0 0</pose>
+      </include>
+      <joint name="learm_fixed_joint" type="fixed">
+        <parent>world</parent>
+        <child>learm</child>
+      </joint>
+    </model>
+
+    <!-- @online{GazeboFuel-OpenRobotics-Table,
+      title={Table},
+      organization={Open Robotics},
+      date={2023},
+      month={September},
+      day={3},
+      author={OpenRobotics},
+      url={https://fuel.gazebosim.org/1.0/OpenRobotics/models/Table},
+    } -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Table</uri>
+      <name>table1</name>
+      <pose degrees="true">0 0 0 0 0 90</pose>
+    </include>
+
+    <!-- @online{GazeboFuel-OpenRobotics-Table,
+      title={Table},
+      organization={Open Robotics},
+      date={2023},
+      month={September},
+      day={3},
+      author={OpenRobotics},
+      url={https://fuel.gazebosim.org/1.0/OpenRobotics/models/Table},
+    } -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Table</uri>
+      <name>table2</name>
+      <pose degrees="true">0.794 0 0 0 0 90</pose>
+    </include>
+
+    <!-- @online{GazeboFuel-GoogleResearch-Avengers_Thor_PLlrpYniaeB,
+      title={Avengers_Thor_PLlrpYniaeB},
+      organization={Open Robotics},
+      date={2020},
+      month={September},
+      day={5},
+      author={GoogleResearch},
+      url={https://fuel.gazebosim.org/1.0/GoogleResearch/models/Avengers_Thor_PLlrpYniaeB},
+    } -->
+    <include>
+      <uri>https://fuel.gazebosim.org/1.0/GoogleResearch/models/Avengers_Thor_PLlrpYniaeB</uri>
+      <pose degrees="true">0.45 0.3 1.025 0 0 0</pose>
+    </include>
+
+    <model name="red_block">
+      <pose degrees="true">0.6568 -0.15 1.025 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>0.025</mass>
+          <inertia>
+            <ixx>1.04167E-05</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1.04167E-05</iyy>
+            <iyz>0</iyz>
+            <izz>1.04167E-05</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>1 0 0 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="green_block">
+      <pose degrees="true">0.547 -0.2598 1.025 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>0.025</mass>
+          <inertia>
+            <ixx>1.04167E-05</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1.04167E-05</iyy>
+            <iyz>0</iyz>
+            <izz>1.04167E-05</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 1 0 1</ambient>
+            <diffuse>0 1 0 1</diffuse>
+            <specular>0 1 0 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>    
+
+    <model name="blue_block">
+      <pose degrees="true">0.397 -0.3 1.025 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>0.025</mass>
+          <inertia>
+            <ixx>1.04167E-05</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1.04167E-05</iyy>
+            <iyz>0</iyz>
+            <izz>1.04167E-05</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0 0 1 1</ambient>
+            <diffuse>0 0 1 1</diffuse>
+            <specular>0 0 1 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>     
+
+    <model name="yellow_block">
+      <pose degrees="true">0.247 -0.2598 1.025 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <pose>0 0 0 0 0 0</pose>
+          <mass>0.025</mass>
+          <inertia>
+            <ixx>1.04167E-05</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1.04167E-05</iyy>
+            <iyz>0</iyz>
+            <izz>1.04167E-05</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.05 0.05 0.05</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 1 0 1</ambient>
+            <diffuse>1 1 0 1</diffuse>
+            <specular>1 1 0 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>         
+
+  </world>
+</sdf>
