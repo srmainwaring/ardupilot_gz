@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <model name="learm_with_ardupilot">
+    <include merge="true">
+      <uri>model://learm</uri>
+    </include>
+
+    <!-- ArduPilot requires the robot have an IMU -->
+    <link name="imu_link">
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.15</mass>
+        <inertia>
+          <ixx>0.00001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00002</iyy>
+          <iyz>0</iyz>
+          <izz>0.00002</izz>
+        </inertia>
+      </inertial>
+      <sensor name="imu_sensor" type="imu">
+        <gz_frame_id>imu_link</gz_frame_id>
+        <pose degrees="true">0 0 0 180 0 0</pose>
+        <always_on>1</always_on>
+        <update_rate>1000.0</update_rate>
+      </sensor>
+    </link>
+    <joint name="imu_joint" type="revolute">
+      <parent>arm_base_link</parent>
+      <child>imu_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <dynamics>
+          <damping>1.0</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <plugin name="ArduPilotPlugin"
+      filename="ArduPilotPlugin">
+      <fdm_addr>127.0.0.1</fdm_addr>
+      <fdm_port_in>9002</fdm_port_in>
+      <connectionTimeoutMaxCount>5</connectionTimeoutMaxCount>
+      <lock_step>1</lock_step>
+      <no_time_sync>1</no_time_sync>
+      <have_32_channels>0</have_32_channels>
+      <modelXYZToAirplaneXForwardZDown degrees="true">0 0 0 180 0 0</modelXYZToAirplaneXForwardZDown>
+      <gazeboXYZToNED degrees="true">0 0 0 180 0 90</gazeboXYZToNED>
+      <imuName>imu_link::imu_sensor</imuName>
+
+      <!--
+      The LeArm requires 6 servo channels to operate
+
+      /learm/shoulder_pan/cmd_pos
+      /learm/shoulder_lift/cmd_pos
+      /learm/elbow/cmd_pos
+      /learm/wrist_flex/cmd_pos
+      /learm/wrist_roll/cmd_pos
+      /learm/grip/cmd_pos
+      -->
+
+      <!-- [-1.57, 1.57] -->
+      <control channel="6">
+        <jointName>shoulder_pan</jointName>
+        <useForce>1</useForce>
+        <multiplier>3.142</multiplier>
+        <offset>-0.5</offset>
+        <servo_min>1000</servo_min>
+        <servo_max>2000</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/learm/shoulder_pan/cmd_pos</cmd_topic>
+      </control>
+
+      <!-- [-3.142, 0] -->
+      <control channel="7">
+        <jointName>shoulder_lift</jointName>
+        <useForce>1</useForce>
+        <multiplier>-3.142</multiplier>
+        <offset>0.0</offset>
+        <servo_min>1000</servo_min>
+        <servo_max>2000</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/learm/shoulder_lift/cmd_pos</cmd_topic>
+      </control>
+
+      <!-- [-1.57, 1.57] -->
+      <control channel="8">
+        <jointName>elbow</jointName>
+        <useForce>1</useForce>
+        <multiplier>3.142</multiplier>
+        <offset>-0.5</offset>
+        <servo_min>1000</servo_min>
+        <servo_max>2000</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/learm/elbow/cmd_pos</cmd_topic>
+      </control>
+
+      <!-- [-1.57, 1.57] -->
+      <control channel="9">
+        <jointName>wrist_flex</jointName>
+        <useForce>1</useForce>
+        <multiplier>3.142</multiplier>
+        <offset>-0.5</offset>
+        <servo_min>1000</servo_min>
+        <servo_max>2000</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/learm/wrist_flex/cmd_pos</cmd_topic>
+      </control>
+
+      <!-- [-1.57, 1.57] -->
+      <control channel="10">
+        <jointName>wrist_roll</jointName>
+        <useForce>1</useForce>
+        <multiplier>3.142</multiplier>
+        <offset>-0.5</offset>
+        <servo_min>1000</servo_min>
+        <servo_max>2000</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/learm/wrist_roll/cmd_pos</cmd_topic>
+      </control>
+
+      <!-- [0, 1.57] -->
+      <control channel="11">
+        <jointName>grip_left</jointName>
+        <useForce>1</useForce>
+        <multiplier>1.57</multiplier>
+        <offset>0.0</offset>
+        <servo_min>1000</servo_min>
+        <servo_max>2000</servo_max>
+        <type>COMMAND</type>
+        <cmd_topic>/learm/grip/cmd_pos</cmd_topic>
+      </control>
+    </plugin>
+  </model>
+</sdf>
