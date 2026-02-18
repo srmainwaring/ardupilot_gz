@@ -53,6 +53,14 @@
           <izz>0.000001313</izz>
         </inertia>
       </inertial>
+      <collision name="camera_link_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.03 0.02</size>
+          </box>
+        </geometry>
+      </collision>
       <visual name="camera_link_visual">
         <pose>0 0 0 0 0 0</pose>
         <geometry>
@@ -372,6 +380,14 @@
           <izz>0.000001313</izz>
         </inertia>
       </inertial>
+      <collision name="camera_wrist_link_collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.02 0.03 0.02</size>
+          </box>
+        </geometry>
+      </collision>
       <visual name="camera_wrist_link_visual">
         <pose>0 0 0 0 0 0</pose>
         <geometry>
