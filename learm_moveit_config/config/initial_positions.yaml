@@ -2,13 +2,8 @@
 
 initial_positions:
   elbow: 0
-  finger_left: 0
-  finger_right: 0
   grip_left: 0
-  grip_right: 0
   shoulder_lift: 0
   shoulder_pan: 0
-  tendon_left: 0
-  tendon_right: 0
   wrist_flex: 0
   wrist_roll: 0

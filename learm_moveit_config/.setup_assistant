@@ -7,7 +7,7 @@ moveit_setup_assistant_config:
   package_settings:
     author_name: Rhys Mainwaring
     author_email: rhys.mainwaring@me.com
-    generated_timestamp: 1771503116
+    generated_timestamp: 1771539452
   control_xacro:
     command:
       - position

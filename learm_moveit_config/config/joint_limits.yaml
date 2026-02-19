@@ -10,56 +10,56 @@ default_acceleration_scaling_factor: 0.1
 joint_limits:
   elbow:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   finger_left:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   finger_right:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   grip_left:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   grip_right:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   shoulder_lift:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   shoulder_pan:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   tendon_left:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   tendon_right:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   wrist_flex:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
   wrist_roll:
     has_velocity_limits: true
-    max_velocity: .inf
-    has_acceleration_limits: false
-    max_acceleration: 0
+    max_velocity: 0.5
+    has_acceleration_limits: true
+    max_acceleration: 1.0
