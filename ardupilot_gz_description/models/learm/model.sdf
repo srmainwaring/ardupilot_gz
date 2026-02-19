@@ -28,7 +28,8 @@
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <cylinder>
-            <radius>0.03</radius><length>0.06</length>
+            <radius>0.03</radius>
+            <length>0.06</length>
           </cylinder>
         </geometry>
         <material>
@@ -112,11 +113,16 @@
         </inertia>
       </inertial>
       <collision name="shoulder_link_collision">
+        <!-- <pose>0 0 0 0 0 0</pose> -->
         <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.04 0.04 0.03</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/shoulder.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="shoulder_link_visual">
@@ -166,11 +172,16 @@
         </inertia>
       </inertial>
       <collision name="humerus_link_collision">
-        <pose>0 0 0.03 0 0 0</pose>
+        <!-- <pose>0 0 0.03 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.025 0.05 0.105</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/humerus.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="humerus_link_visual">
@@ -220,11 +231,16 @@
         </inertia>
       </inertial>
       <collision name="forearm_link_collision">
-        <pose>0 0 0.01 0 0 0</pose>
+        <!-- <pose>0 0 0.01 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.025 0.04 0.05</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/forearm.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="forearm_link_visual">
@@ -274,11 +290,16 @@
         </inertia>
       </inertial>
       <collision name="wrist_link_collision">
-        <pose>0.01 0 0.02 0 0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
+        <!-- <pose>0.01 0 0.02 0 0 0</pose> -->
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.04 0.03 0.06</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/wrist.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="wrist_link_visual">
@@ -328,11 +349,16 @@
         </inertia>
       </inertial>
       <collision name="hand_link_collision">
-        <pose>0.02 0 0.03 0 0 0</pose>
+        <!-- <pose>0.02 0 0.03 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.04 0.04 0.04</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/hand.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="hand_link_visual">
@@ -439,11 +465,16 @@
         </inertia>
       </inertial>
       <collision name="grip_left_link_collision">
-        <pose>0 0 0.01 0 0 0</pose>
+        <!-- <pose>0 0 0.01 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.015 0.05</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal-left.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="grip_left_link_visual">
@@ -462,7 +493,7 @@
       </visual>
     </link>
     <joint name="grip_left" type="revolute">
-      <pose relative_to="hand_link">0 0.015 0.03 -1.57 0 0</pose>
+      <pose relative_to="hand_link">-0.006 0.0137 0.0318 -1.57 0 0</pose>
       <parent>hand_link</parent>
       <child>grip_left_link</child>
       <axis>
@@ -493,11 +524,16 @@
         </inertia>
       </inertial>
       <collision name="finger_left_link_collision">
-        <pose>0 -0.01 0.025 0 0 0</pose>
+        <!-- <pose>0 -0.01 0.025 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.01 0.06</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="finger_left_link_visual">
@@ -516,11 +552,15 @@
       </visual>
     </link>
     <joint name="finger_left" type="revolute">
-      <pose relative_to="grip_left_link">0 0 0.03 1.57 0 0</pose>
+      <pose relative_to="grip_left_link">0.006 0 0.029 1.57 0 0</pose>
       <parent>grip_left_link</parent>
       <child>finger_left_link</child>
       <axis>
         <xyz>-1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
         <dynamics>
           <damping>0.01</damping>
         </dynamics>
@@ -543,11 +583,16 @@
         </inertia>
       </inertial>
       <collision name="grip_right_link_collision">
-        <pose>0 0 0.01 0 0 0</pose>
+        <!-- <pose>0 0 0.01 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.015 0.05</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal-right.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="grip_right_link_visual">
@@ -566,7 +611,7 @@
       </visual>
     </link>
     <joint name="grip_right" type="revolute">
-      <pose relative_to="hand_link">0 -0.015 0.03 1.57 0 0</pose>
+      <pose relative_to="hand_link">-0.008 -0.0137 0.0315 1.57 0 0</pose>
       <parent>hand_link</parent>
       <child>grip_right_link</child>
       <axis>
@@ -597,11 +642,16 @@
         </inertia>
       </inertial>
       <collision name="finger_right_link_collision">
-        <pose>0 0.01 0.025 0 0 3.1415899999999999</pose>
+        <!-- <pose>0 0.01 0.025 0 0 3.1415899999999999</pose> -->
+        <pose>0 0 0 0 0 3.1415899999999999</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.01 0.06</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="finger_right_link_visual">
@@ -620,11 +670,15 @@
       </visual>
     </link>
     <joint name="finger_right" type="revolute">
-      <pose relative_to="grip_right_link">0 0 0.03 -1.57 0 0</pose>
+      <pose relative_to="grip_right_link">0.008 0 0.03 -1.57 0 0</pose>
       <parent>grip_right_link</parent>
       <child>finger_right_link</child>
       <axis>
         <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
         <dynamics>
           <damping>0.01</damping>
         </dynamics>
@@ -647,11 +701,16 @@
         </inertia>
       </inertial>
       <collision name="tendon_left_link_collision">
-        <pose>0 0 0.02 0 0 0</pose>
+        <!-- <pose>0 0 0.02 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.01 0.04</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="tendon_left_link_visual">
@@ -675,6 +734,10 @@
       <child>tendon_left_link</child>
       <axis>
         <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
         <dynamics>
           <damping>0.01</damping>
         </dynamics>
@@ -697,11 +760,16 @@
         </inertia>
       </inertial>
       <collision name="tendon_right_link_collision">
-        <pose>0 0 0.02 0 0 0</pose>
+        <!-- <pose>0 0 0.02 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.01 0.04</size>
-          </box>
+          </box> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="tendon_right_link_visual">
@@ -725,135 +793,15 @@
       <child>tendon_right_link</child>
       <axis>
         <xyz>-1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
         <dynamics>
           <damping>0.01</damping>
         </dynamics>
       </axis>
     </joint>
-
-    <!-- Links and detachable joint plugins to close kinematic chains in gripper -->
-    <!-- <link name="tendon_right_link_2">
-      <self_collide>0</self_collide>
-      <pose relative_to="tendon_right_2">0 0 0 0 0 0</pose>
-      <inertial>
-        <pose>0 0 0 0 0 0</pose>
-        <mass>0.001</mass>
-        <inertia>
-          <ixx>0.000001</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>0.000001</iyy>
-          <iyz>0</iyz>
-          <izz>0.000001</izz>
-        </inertia>
-      </inertial>
-      <collision name="tendon_right_link_2_collision">
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <box>
-            <size>0.01 0.01 0.05</size>
-          </box>
-        </geometry>
-      </collision>
-      <visual name="tendon_right_link_2_visual">
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <ambient>0.1 0.1 0.1</ambient>
-          <diffuse>0.1 0.1 0.1</diffuse>
-          <specular>0.01 0.01 0.01 1.0</specular>
-        </material>
-      </visual>
-    </link>
-    <joint name="tendon_right_2" type="revolute">
-      <pose relative_to="hand_link">0 -0.034 0.05 1.57 0 0</pose>
-      <parent>finger_right_link</parent>
-      <child>tendon_right_link_2</child>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <dynamics>
-          <damping>0.01</damping>
-        </dynamics>
-      </axis>
-    </joint>
-
-    <link name="tendon_left_link_2">
-      <self_collide>0</self_collide>
-      <pose relative_to="tendon_left_2">0 0 0 0 0 0</pose>
-      <inertial>
-        <pose>0 0 0 0 0 0</pose>
-        <mass>0.001</mass>
-        <inertia>
-          <ixx>0.000001</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>0.000001</iyy>
-          <iyz>0</iyz>
-          <izz>0.000001</izz>
-        </inertia>
-      </inertial>
-      <collision name="tendon_left_link_2_collision">
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <box>
-            <size>0.01 0.01 0.05</size>
-          </box>
-        </geometry>
-      </collision>
-      <visual name="tendon_left_link_2_visual">
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <ambient>0.1 0.1 0.1</ambient>
-          <diffuse>0.1 0.1 0.1</diffuse>
-          <specular>0.01 0.01 0.01 1.0</specular>
-        </material>
-      </visual>
-    </link>
-    <joint name="tendon_left_2" type="revolute">
-      <pose relative_to="hand_link">0 0.034 0.05 -1.57 0 0</pose>
-      <parent>finger_left_link</parent>
-      <child>tendon_left_link_2</child>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <dynamics>
-          <damping>0.01</damping>
-        </dynamics>
-      </axis>
-    </joint>
-
-    <plugin name="gz::sim::systems::DetachableJoint"
-      filename="libgz-sim-detachable-joint-system.so">
-      <parent_link>tendon_left_link</parent_link>
-      <child_link>tendon_left_link_2</child_link>
-      <child_model>iris_with_arm</child_model>
-      <joint_type>fixed</joint_type>
-      <physics>
-        <cfm>1.0e-5</cfm>
-        <erp>0.8</erp>
-      </physics>
-    </plugin>
-    <plugin name="gz::sim::systems::DetachableJoint"
-      filename="libgz-sim-detachable-joint-system.so">
-      <parent_link>tendon_right_link</parent_link>
-      <child_link>tendon_right_link_2</child_link>
-      <child_model>iris_with_arm</child_model>
-      <joint_type>fixed</joint_type>
-      <physics>
-        <cfm>1.0e-5</cfm>
-        <erp>0.8</erp>
-      </physics>
-    </plugin> -->
 
     <plugin filename="gz-sim-joint-state-publisher-system"
       name="gz::sim::systems::JointStatePublisher">
@@ -891,7 +839,7 @@
         name="gz::sim::systems::JointPositionController">
       <joint_name>elbow</joint_name>
       <topic>/learm/elbow/cmd_pos</topic>
-      <initial_position>-1.57</initial_position>
+      <initial_position>-1.0</initial_position>
       <p_gain>2</p_gain>
       <i_gain>0.0</i_gain>
       <d_gain>0.05</d_gain>
@@ -956,7 +904,7 @@
       <cmd_max>10</cmd_max>
       <cmd_min>-10</cmd_min>
     </plugin>
-  
+
     <plugin filename="gz-sim-joint-position-controller-system"
         name="gz::sim::systems::JointPositionController">
       <joint_name>finger_left</joint_name>
