@@ -131,11 +131,11 @@
     } -->
     <include>
       <uri>https://fuel.gazebosim.org/1.0/GoogleResearch/models/Avengers_Thor_PLlrpYniaeB</uri>
-      <pose degrees="true">0.45 0.3 1.025 0 0 0</pose>
+      <pose degrees="true">0.45 0.3 1.041 0 0 0</pose>
     </include>
 
     <model name="red_block">
-      <pose degrees="true">0.6568 -0.15 1.025 0 0 0</pose>
+      <pose degrees="true">0.6568 -0.15 1.0141 0 0 0</pose>
       <link name="link">
         <inertial>
           <pose>0 0 0 0 0 0</pose>
@@ -172,7 +172,7 @@
     </model>
 
     <model name="green_block">
-      <pose degrees="true">0.547 -0.2598 1.025 0 0 0</pose>
+      <pose degrees="true">0.547 -0.2598 1.041 0 0 0</pose>
       <link name="link">
         <inertial>
           <pose>0 0 0 0 0 0</pose>
@@ -209,7 +209,7 @@
     </model>    
 
     <model name="blue_block">
-      <pose degrees="true">0.397 -0.3 1.025 0 0 0</pose>
+      <pose degrees="true">0.397 -0.3 1.041 0 0 0</pose>
       <link name="link">
         <inertial>
           <pose>0 0 0 0 0 0</pose>
@@ -246,7 +246,7 @@
     </model>     
 
     <model name="yellow_block">
-      <pose degrees="true">0.247 -0.2598 1.025 0 0 0</pose>
+      <pose degrees="true">0.247 -0.2598 1.041 0 0 0</pose>
       <link name="link">
         <inertial>
           <pose>0 0 0 0 0 0</pose>
