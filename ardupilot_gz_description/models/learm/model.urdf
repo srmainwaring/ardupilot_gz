@@ -22,52 +22,6 @@
             </geometry>
         </collision>
     </link>
-    <link name="camera_link">
-        <inertial>
-            <mass value="0.01212"/>
-            <origin xyz="0 0 0" rpy="0 -0 0"/>
-            <inertia ixx="1.313e-06" ixy="0" ixz="0" iyy="8.08e-07" iyz="0" izz="1.313e-06"/>
-        </inertial>
-        <visual>
-            <origin xyz="0 0 0" rpy="0 -0 0"/>
-            <geometry>
-                <box size="0.02 0.03 0.02"/>
-            </geometry>
-            <material name="camera_linkcamera_link_visual">
-                <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
-            </material>
-        </visual>
-        <collision>
-            <origin xyz="0 0 0" rpy="0 -0 0"/>
-            <geometry>
-                <box size="0.02 0.03 0.02"/>
-            </geometry>
-        </collision>
-    </link>
-    <link name="camera_wrist_link">
-        <inertial>
-            <mass value="0.01212"/>
-            <origin xyz="-2.77556e-17 0 0" rpy="0 2.02931e-17 0"/>
-            <inertia ixx="1.313e-06" ixy="0" ixz="0" iyy="8.08e-07" iyz="0" izz="1.313e-06"/>
-        </inertial>
-        <visual>
-            <origin xyz="-5.55112e-17 0 5.63246e-34" rpy="0 4.05861e-17 0"/>
-            <geometry>
-                <box size="0.02 0.03 0.02"/>
-            </geometry>
-            <material name="camera_wrist_linkcamera_wrist_link_visual">
-                <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
-            </material>
-        </visual>
-        <collision>
-            <origin xyz="-5.55112e-17 0 5.63246e-34" rpy="0 4.05861e-17 0"/>
-            <geometry>
-                <box size="0.02 0.03 0.02"/>
-            </geometry>
-        </collision>
-    </link>
     <link name="finger_left_link">
         <inertial>
             <mass value="0.00303"/>
@@ -85,9 +39,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-2.77556e-17 1.38778e-17 2.81623e-34" rpy="1.00451e-33 4.05861e-17 -9.15878e-34"/>
+            <origin xyz="-2.67409e-17 -0.01 0.025" rpy="1.00451e-33 4.05861e-17 -9.15878e-34"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger.stl" scale="1 1 1"/>
+                <box size="0.005 0.01 0.06"/>
             </geometry>
         </collision>
     </link>
@@ -108,17 +62,17 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-2.77556e-17 -1.38778e-17 2.81623e-34" rpy="1.07699e-22 -4.05861e-17 3.14159"/>
+            <origin xyz="-2.67409e-17 0.01 0.025" rpy="1.07699e-22 -4.05861e-17 3.14159"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger.stl" scale="1 1 1"/>
+                <box size="0.005 0.01 0.06"/>
             </geometry>
         </collision>
     </link>
     <link name="forearm_link">
         <inertial>
-            <mass value="0.0396626"/>
-            <origin xyz="2.02931e-19 0 0.01" rpy="0 2.02931e-17 0"/>
-            <inertia ixx="1.35514e-05" ixy="0" ixz="0" iyy="1.03288e-05" iyz="0" izz="7.35411e-06"/>
+            <mass value="0.03636"/>
+            <origin xyz="6.08792e-19 0 0.03" rpy="0 2.02931e-17 0"/>
+            <inertia ixx="1.5756e-05" ixy="0" ixz="0" iyy="1.28018e-05" iyz="0" izz="6.74175e-06"/>
         </inertial>
         <visual>
             <origin xyz="2.81623e-34 0 2.77556e-17" rpy="0 4.05861e-17 0"/>
@@ -131,9 +85,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="2.81623e-34 0 2.77556e-17" rpy="0 4.05861e-17 0"/>
+            <origin xyz="1.21758e-18 0 0.03" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/forearm.stl" scale="1 1 1"/>
+                <box size="0.025 0.04 0.06"/>
             </geometry>
         </collision>
     </link>
@@ -154,9 +108,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-3.33067e-16 -3.33067e-16 -1.73472e-17" rpy="1.53697e-17 -3.18197e-17 9.56526e-17"/>
+            <origin xyz="-3.33385e-16 -3.33221e-16 0.01" rpy="1.53697e-17 -3.18197e-17 9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal-left.stl" scale="1 1 1"/>
+                <box size="0.004 0.015 0.04"/>
             </geometry>
         </collision>
     </link>
@@ -177,17 +131,17 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-3.33067e-16 2.22045e-16 -6.245e-17" rpy="-1.53697e-17 -3.18197e-17 -9.56526e-17"/>
+            <origin xyz="-3.33385e-16 2.22198e-16 0.01" rpy="-1.53697e-17 -3.18197e-17 -9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal-right.stl" scale="1 1 1"/>
+                <box size="0.005 0.015 0.04"/>
             </geometry>
         </collision>
     </link>
     <link name="hand_link">
         <inertial>
-            <mass value="0.06464"/>
+            <mass value="0.03232"/>
             <origin xyz="0.02 0 0.03" rpy="0 2.02931e-17 0"/>
-            <inertia ixx="1.72373e-05" ixy="0" ixz="0" iyy="1.72373e-05" iyz="0" izz="1.72373e-05"/>
+            <inertia ixx="5.38667e-06" ixy="0" ixz="0" iyy="5.38667e-06" iyz="0" izz="8.61867e-06"/>
         </inertial>
         <visual>
             <origin xyz="-5.55112e-17 0 5.63246e-34" rpy="0 4.05861e-17 0"/>
@@ -200,16 +154,16 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-5.55112e-17 0 5.63246e-34" rpy="0 4.05861e-17 0"/>
+            <origin xyz="0.02 0 0.03" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/hand.stl" scale="1 1 1"/>
+                <box size="0.04 0.04 0.02"/>
             </geometry>
         </collision>
     </link>
     <link name="humerus_link">
         <inertial>
             <mass value="0.0198313"/>
-            <origin xyz="6.08792e-19 0 0.03" rpy="0 2.02931e-17 0"/>
+            <origin xyz="8.11723e-19 0 0.04" rpy="0 2.02931e-17 0"/>
             <inertia ixx="2.23515e-05" ixy="0" ixz="0" iyy="1.92529e-05" iyz="0" izz="5.1644e-06"/>
         </inertial>
         <visual>
@@ -223,17 +177,17 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-7.04057e-35 0 -6.93889e-18" rpy="0 4.05861e-17 0"/>
+            <origin xyz="1.62345e-18 0 0.04" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/humerus.stl" scale="1 1 1"/>
+                <box size="0.025 0.05 0.08"/>
             </geometry>
         </collision>
     </link>
     <link name="shoulder_link">
         <inertial>
-            <mass value="0.02424"/>
+            <mass value="0.0253841"/>
             <origin xyz="0 0 0" rpy="0 -0 0"/>
-            <inertia ixx="5.05e-06" ixy="0" ixz="0" iyy="5.05e-06" iyz="0" izz="6.464e-06"/>
+            <inertia ixx="1.14757e-05" ixy="0" ixz="0" iyy="1.14757e-05" iyz="0" izz="2.03073e-05"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 -0 0"/>
@@ -248,7 +202,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/shoulder.stl" scale="1 1 1"/>
+                <cylinder radius="0.04" length="0.025"/>
             </geometry>
         </collision>
     </link>
@@ -315,31 +269,19 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="2.77556e-17 0 -5.55112e-17" rpy="0 4.05861e-17 0"/>
+            <origin xyz="0.01 0 0.02" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/wrist.stl" scale="1 1 1"/>
+                <box size="0.04 0.03 0.06"/>
             </geometry>
         </collision>
     </link>
-    <joint name="camera_base_joint" type="fixed">
-        <origin xyz="0 0 0.03" rpy="0 -0 0"/>
-        <axis xyz="0 0 0"/>
-        <parent link="arm_base_link"/>
-        <child link="camera_link"/>
-    </joint>
-    <joint name="camera_wrist_joint" type="fixed">
-        <origin xyz="-2.77556e-17 0.02 0" rpy="0 2.02931e-17 0"/>
-        <axis xyz="0 0 0"/>
-        <parent link="hand_link"/>
-        <child link="camera_wrist_link"/>
-    </joint>
     <joint name="elbow" type="revolute">
         <origin xyz="-1.38778e-17 0 0.105" rpy="0 2.02931e-17 0"/>
         <axis xyz="0 -1 0"/>
         <parent link="humerus_link"/>
         <child link="forearm_link"/>
         <dynamics damping="0.04" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="-1.57" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="-1.57" upper="1.57"/>
     </joint>
     <joint name="finger_left" type="revolute">
         <origin xyz="0.006 -1.11022e-16 0.029" rpy="1.57 -2.31183e-18 -1.22229e-16"/>
@@ -347,7 +289,7 @@
         <parent link="grip_left_link"/>
         <child link="finger_left_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="0" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="0" upper="1.57"/>
     </joint>
     <joint name="finger_right" type="revolute">
         <origin xyz="0.008 1.11022e-16 0.03" rpy="-1.57 -2.31183e-18 1.22229e-16"/>
@@ -355,7 +297,7 @@
         <parent link="grip_right_link"/>
         <child link="finger_right_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="0" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="0" upper="1.57"/>
     </joint>
     <joint name="grip_left" type="revolute">
         <origin xyz="-0.006 0.0137 0.0318" rpy="-1.57 6.15908e-17 -4.36179e-17"/>
@@ -363,7 +305,7 @@
         <parent link="hand_link"/>
         <child link="grip_left_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="0" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="0" upper="1.57"/>
     </joint>
     <joint name="grip_right" type="revolute">
         <origin xyz="-0.008 -0.0137 0.0315" rpy="1.57 6.15908e-17 4.36179e-17"/>
@@ -371,7 +313,7 @@
         <parent link="hand_link"/>
         <child link="grip_right_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="0" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="0" upper="1.57"/>
     </joint>
     <joint name="shoulder_lift" type="revolute">
         <origin xyz="-0.01 0 0.028" rpy="0 1.5708 -0"/>
@@ -379,7 +321,7 @@
         <parent link="shoulder_link"/>
         <child link="humerus_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="-3.142" upper="0"/>
+        <limit effort="50" velocity="0.5" lower="-3.142" upper="0"/>
     </joint>
     <joint name="shoulder_pan" type="revolute">
         <origin xyz="0 0 0.059" rpy="0 -0 0"/>
@@ -387,7 +329,7 @@
         <parent link="arm_base_link"/>
         <child link="shoulder_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="-1.57" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="-1.57" upper="1.57"/>
     </joint>
     <joint name="tendon_left" type="revolute">
         <origin xyz="-5.55112e-17 0.005 0.05" rpy="-1.57 6.15908e-17 -4.36179e-17"/>
@@ -395,7 +337,7 @@
         <parent link="hand_link"/>
         <child link="tendon_left_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="0" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="0" upper="1.57"/>
     </joint>
     <joint name="tendon_right" type="revolute">
         <origin xyz="-5.55112e-17 -0.005 0.05" rpy="1.57 6.15908e-17 4.36179e-17"/>
@@ -403,7 +345,7 @@
         <parent link="hand_link"/>
         <child link="tendon_right_link"/>
         <dynamics damping="0.01" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="0" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="0" upper="1.57"/>
     </joint>
     <joint name="wrist_flex" type="revolute">
         <origin xyz="-1.38778e-17 0 0.09" rpy="0 2.02931e-17 0"/>
@@ -411,7 +353,7 @@
         <parent link="forearm_link"/>
         <child link="wrist_link"/>
         <dynamics damping="0.04" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="-1.57" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="-1.57" upper="1.57"/>
     </joint>
     <joint name="wrist_roll" type="revolute">
         <origin xyz="4.16334e-17 0 0.06" rpy="0 2.02931e-17 0"/>
@@ -419,6 +361,6 @@
         <parent link="wrist_link"/>
         <child link="hand_link"/>
         <dynamics damping="0.04" friction="0"/>
-        <limit effort="inf" velocity="inf" lower="-1.57" upper="1.57"/>
+        <limit effort="10" velocity="0.5" lower="-1.57" upper="1.57"/>
     </joint>
 </robot>
