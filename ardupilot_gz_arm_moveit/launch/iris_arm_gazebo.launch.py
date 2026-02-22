@@ -53,8 +53,6 @@ def _load_iris_sdf():
 
 
 def launch_setup(context, *args, **kwargs):
-    launch_rviz = LaunchConfiguration("launch_rviz")
-
     robot_description_full = {"robot_description": _load_iris_sdf()}
 
     srdf_path = os.path.join(
@@ -189,7 +187,7 @@ def launch_setup(context, *args, **kwargs):
 
     rviz = Node(
         package="rviz2",
-        condition=IfCondition(launch_rviz),
+        condition=IfCondition(LaunchConfiguration("rviz")),
         executable="rviz2",
         name="rviz2_moveit",
         output="log",
@@ -244,7 +242,9 @@ def launch_setup(context, *args, **kwargs):
 def generate_launch_description():
     return LaunchDescription(
         [
-            DeclareLaunchArgument("launch_rviz", default_value="true"),
+            DeclareLaunchArgument(
+                "rviz", default_value="true", description="Open RViz."
+            ),
             OpaqueFunction(function=launch_setup),
         ]
     )
