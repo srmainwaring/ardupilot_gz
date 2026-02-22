@@ -3,12 +3,20 @@ import os
 
 from launch import LaunchDescription
 from launch.actions import (
-    DeclareLaunchArgument, OpaqueFunction, ExecuteProcess,
-    RegisterEventHandler, TimerAction,
+    DeclareLaunchArgument,
+    OpaqueFunction,
+    ExecuteProcess,
+    RegisterEventHandler,
+    TimerAction,
 )
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessStart
-from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import (
+    Command,
+    FindExecutable,
+    LaunchConfiguration,
+    PathJoinSubstitution,
+)
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
@@ -30,33 +38,48 @@ def launch_setup(context, *args, **kwargs):
     use_sim_time = LaunchConfiguration("use_sim_time")
     launch_rviz = LaunchConfiguration("launch_rviz")
 
-    robot_description_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]), " ",
-        PathJoinSubstitution([FindPackageShare(PKG), "urdf", "learm.urdf.xacro"]),
-    ])
-    robot_description = {"robot_description": ParameterValue(robot_description_content, value_type=str)}
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution([FindPackageShare(PKG), "urdf", "learm.urdf.xacro"]),
+        ]
+    )
+    robot_description = {
+        "robot_description": ParameterValue(robot_description_content, value_type=str)
+    }
 
-    robot_description_semantic_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]), " ",
-        PathJoinSubstitution([FindPackageShare(PKG), "srdf", "learm.srdf.xacro"]),
-    ])
-    robot_description_semantic = {"robot_description_semantic": ParameterValue(robot_description_semantic_content, value_type=str)}
+    robot_description_semantic_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution([FindPackageShare(PKG), "srdf", "learm.srdf.xacro"]),
+        ]
+    )
+    robot_description_semantic = {
+        "robot_description_semantic": ParameterValue(
+            robot_description_semantic_content, value_type=str
+        )
+    }
 
-    robot_description_kinematics = {"robot_description_kinematics": load_yaml(PKG, "config/kinematics.yaml")}
+    robot_description_kinematics = {
+        "robot_description_kinematics": load_yaml(PKG, "config/kinematics.yaml")
+    }
 
     ompl_planning_pipeline_config = {
         "move_group": {
             "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters":
-                "default_planner_request_adapters/AddTimeOptimalParameterization "
-                "default_planner_request_adapters/FixWorkspaceBounds "
-                "default_planner_request_adapters/FixStartStateBounds "
-                "default_planner_request_adapters/FixStartStateCollision "
-                "default_planner_request_adapters/FixStartStatePathConstraints",
+            "request_adapters": "default_planner_request_adapters/AddTimeOptimalParameterization "
+            "default_planner_request_adapters/FixWorkspaceBounds "
+            "default_planner_request_adapters/FixStartStateBounds "
+            "default_planner_request_adapters/FixStartStateCollision "
+            "default_planner_request_adapters/FixStartStatePathConstraints",
             "start_state_max_bounds_error": 0.1,
         }
     }
-    ompl_planning_pipeline_config["move_group"].update(load_yaml(PKG, "config/ompl_planning.yaml"))
+    ompl_planning_pipeline_config["move_group"].update(
+        load_yaml(PKG, "config/ompl_planning.yaml")
+    )
 
     moveit_controllers = {
         "moveit_simple_controller_manager": load_yaml(PKG, "config/controllers.yaml"),
@@ -89,24 +112,42 @@ def launch_setup(context, *args, **kwargs):
     )
 
     jsb_spawner = ExecuteProcess(
-        cmd=["ros2", "run", "controller_manager", "spawner",
-             "joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        cmd=[
+            "ros2",
+            "run",
+            "controller_manager",
+            "spawner",
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+        ],
         output="screen",
     )
     arm_spawner = ExecuteProcess(
-        cmd=["ros2", "run", "controller_manager", "spawner",
-             "arm_controller", "--controller-manager", "/controller_manager"],
+        cmd=[
+            "ros2",
+            "run",
+            "controller_manager",
+            "spawner",
+            "arm_controller",
+            "--controller-manager",
+            "/controller_manager",
+        ],
         output="screen",
     )
 
-    delayed_jsb = RegisterEventHandler(event_handler=OnProcessStart(
-        target_action=ros2_control_node,
-        on_start=[TimerAction(period=2.0, actions=[jsb_spawner])],
-    ))
-    delayed_arm = RegisterEventHandler(event_handler=OnProcessStart(
-        target_action=ros2_control_node,
-        on_start=[TimerAction(period=3.0, actions=[arm_spawner])],
-    ))
+    delayed_jsb = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=ros2_control_node,
+            on_start=[TimerAction(period=2.0, actions=[jsb_spawner])],
+        )
+    )
+    delayed_arm = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=ros2_control_node,
+            on_start=[TimerAction(period=3.0, actions=[arm_spawner])],
+        )
+    )
 
     robot_state_pub = Node(
         package="robot_state_publisher",
@@ -128,9 +169,13 @@ def launch_setup(context, *args, **kwargs):
         executable="move_group",
         output="screen",
         parameters=[
-            robot_description, robot_description_semantic, robot_description_kinematics,
-            ompl_planning_pipeline_config, trajectory_execution,
-            moveit_controllers, planning_scene_monitor,
+            robot_description,
+            robot_description_semantic,
+            robot_description_kinematics,
+            ompl_planning_pipeline_config,
+            trajectory_execution,
+            moveit_controllers,
+            planning_scene_monitor,
             {"use_sim_time": use_sim_time},
         ],
     )
@@ -141,22 +186,34 @@ def launch_setup(context, *args, **kwargs):
         executable="rviz2",
         name="rviz2_moveit",
         output="log",
-        arguments=["-d", PathJoinSubstitution([FindPackageShare(PKG), "rviz", "view_robot.rviz"])],
+        arguments=[
+            "-d",
+            PathJoinSubstitution([FindPackageShare(PKG), "rviz", "view_robot.rviz"]),
+        ],
         parameters=[
-            robot_description, robot_description_semantic,
-            ompl_planning_pipeline_config, robot_description_kinematics,
+            robot_description,
+            robot_description_semantic,
+            ompl_planning_pipeline_config,
+            robot_description_kinematics,
         ],
     )
 
     return [
-        static_tf, robot_state_pub, ros2_control_node,
-        delayed_jsb, delayed_arm, move_group, rviz,
+        static_tf,
+        robot_state_pub,
+        ros2_control_node,
+        delayed_jsb,
+        delayed_arm,
+        move_group,
+        rviz,
     ]
 
 
 def generate_launch_description():
-    return LaunchDescription([
-        DeclareLaunchArgument("use_sim_time", default_value="false"),
-        DeclareLaunchArgument("launch_rviz", default_value="true"),
-        OpaqueFunction(function=launch_setup),
-    ])
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument("use_sim_time", default_value="false"),
+            DeclareLaunchArgument("launch_rviz", default_value="true"),
+            OpaqueFunction(function=launch_setup),
+        ]
+    )
