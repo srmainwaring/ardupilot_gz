@@ -8,7 +8,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 -0 0"/>
             <geometry>
-                <cylinder radius="0.03" length="0.06"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/base.dae" scale="1 1 1"/>
             </geometry>
             <material name="arm_base_linkarm_base_link_visual">
                 <texture/>
@@ -16,9 +16,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="0 0 0" rpy="0 -0 0"/>
+            <origin xyz="0 0 0.032" rpy="0 -0 0"/>
             <geometry>
-                <cylinder radius="0.03" length="0.06"/>
+                <cylinder radius="0.06" length="0.08"/>
             </geometry>
         </collision>
     </link>
@@ -31,7 +31,7 @@
         <visual>
             <origin xyz="-2.77556e-17 1.38778e-17 2.81623e-34" rpy="1.00451e-33 4.05861e-17 -9.15878e-34"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger.dae" scale="1 1 1"/>
             </geometry>
             <material name="finger_left_linkfinger_left_link_visual">
                 <texture/>
@@ -39,9 +39,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-2.67409e-17 -0.01 0.025" rpy="1.00451e-33 4.05861e-17 -9.15878e-34"/>
+            <origin xyz="-2.77556e-17 1.38778e-17 2.81623e-34" rpy="1.00451e-33 4.05861e-17 -9.15878e-34"/>
             <geometry>
-                <box size="0.005 0.01 0.06"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -54,7 +54,7 @@
         <visual>
             <origin xyz="-2.77556e-17 -1.38778e-17 2.81623e-34" rpy="1.07699e-22 -4.05861e-17 3.14159"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger.dae" scale="1 1 1"/>
             </geometry>
             <material name="finger_right_linkfinger_right_link_visual">
                 <texture/>
@@ -62,9 +62,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-2.67409e-17 0.01 0.025" rpy="1.07699e-22 -4.05861e-17 3.14159"/>
+            <origin xyz="-2.77556e-17 -1.38778e-17 2.81623e-34" rpy="1.07699e-22 -4.05861e-17 3.14159"/>
             <geometry>
-                <box size="0.005 0.01 0.06"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/finger_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -77,7 +77,7 @@
         <visual>
             <origin xyz="2.81623e-34 0 2.77556e-17" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/forearm.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/forearm.dae" scale="1 1 1"/>
             </geometry>
             <material name="forearm_linkforearm_link_visual">
                 <texture/>
@@ -85,9 +85,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="1.21758e-18 0 0.03" rpy="0 4.05861e-17 0"/>
+            <origin xyz="2.81623e-34 0 2.77556e-17" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <box size="0.025 0.04 0.06"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/forearm_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -100,7 +100,7 @@
         <visual>
             <origin xyz="-3.33067e-16 -3.33067e-16 -1.73472e-17" rpy="1.53697e-17 -3.18197e-17 9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal-left.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal_left.dae" scale="1 1 1"/>
             </geometry>
             <material name="grip_left_linkgrip_left_link_visual">
                 <texture/>
@@ -108,9 +108,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-3.33385e-16 -3.33221e-16 0.01" rpy="1.53697e-17 -3.18197e-17 9.56526e-17"/>
+            <origin xyz="-3.33067e-16 -3.33067e-16 -1.73472e-17" rpy="1.53697e-17 -3.18197e-17 9.56526e-17"/>
             <geometry>
-                <box size="0.004 0.015 0.04"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal_left_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -123,7 +123,7 @@
         <visual>
             <origin xyz="-3.33067e-16 2.22045e-16 -6.245e-17" rpy="-1.53697e-17 -3.18197e-17 -9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal-right.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal_right.dae" scale="1 1 1"/>
             </geometry>
             <material name="grip_right_linkgrip_right_link_visual">
                 <texture/>
@@ -131,9 +131,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="-3.33385e-16 2.22198e-16 0.01" rpy="-1.53697e-17 -3.18197e-17 -9.56526e-17"/>
+            <origin xyz="-3.33067e-16 2.22045e-16 -6.245e-17" rpy="-1.53697e-17 -3.18197e-17 -9.56526e-17"/>
             <geometry>
-                <box size="0.005 0.015 0.04"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/carpal_right_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -146,7 +146,7 @@
         <visual>
             <origin xyz="-5.55112e-17 0 5.63246e-34" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/hand.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/hand.dae" scale="1 1 1"/>
             </geometry>
             <material name="hand_linkhand_link_visual">
                 <texture/>
@@ -154,9 +154,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="0.02 0 0.03" rpy="0 4.05861e-17 0"/>
+            <origin xyz="-5.55112e-17 0 5.63246e-34" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <box size="0.04 0.04 0.02"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/hand_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -169,7 +169,7 @@
         <visual>
             <origin xyz="-7.04057e-35 0 -6.93889e-18" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/humerus.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/humerus.dae" scale="1 1 1"/>
             </geometry>
             <material name="humerus_linkhumerus_link_visual">
                 <texture/>
@@ -177,9 +177,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="1.62345e-18 0 0.04" rpy="0 4.05861e-17 0"/>
+            <origin xyz="-7.04057e-35 0 -6.93889e-18" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <box size="0.025 0.05 0.08"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/humerus_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -192,7 +192,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 -0 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/shoulder.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/shoulder.dae" scale="1 1 1"/>
             </geometry>
             <material name="shoulder_linkshoulder_link_visual">
                 <texture/>
@@ -202,7 +202,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 -0 0"/>
             <geometry>
-                <cylinder radius="0.04" length="0.025"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/shoulder_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -215,7 +215,7 @@
         <visual>
             <origin xyz="-3.60822e-16 -3.33067e-16 -7.97973e-17" rpy="1.53697e-17 -3.18197e-17 9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon.dae" scale="1 1 1"/>
             </geometry>
             <material name="tendon_left_linktendon_left_link_visual">
                 <texture/>
@@ -225,7 +225,7 @@
         <collision>
             <origin xyz="-3.60822e-16 -3.33067e-16 -7.97973e-17" rpy="1.53697e-17 -3.18197e-17 9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -238,7 +238,7 @@
         <visual>
             <origin xyz="-3.60822e-16 3.33067e-16 -7.97973e-17" rpy="-1.53697e-17 -3.18197e-17 -9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon.dae" scale="1 1 1"/>
             </geometry>
             <material name="tendon_right_linktendon_right_link_visual">
                 <texture/>
@@ -248,7 +248,7 @@
         <collision>
             <origin xyz="-3.60822e-16 3.33067e-16 -7.97973e-17" rpy="-1.53697e-17 -3.18197e-17 -9.56526e-17"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/tendon_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
@@ -261,7 +261,7 @@
         <visual>
             <origin xyz="2.77556e-17 0 -5.55112e-17" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/wrist.stl" scale="1 1 1"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/wrist.dae" scale="1 1 1"/>
             </geometry>
             <material name="wrist_linkwrist_link_visual">
                 <texture/>
@@ -269,9 +269,9 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="0.01 0 0.02" rpy="0 4.05861e-17 0"/>
+            <origin xyz="2.77556e-17 0 -5.55112e-17" rpy="0 4.05861e-17 0"/>
             <geometry>
-                <box size="0.04 0.03 0.06"/>
+                <mesh filename="package://ardupilot_gz_description/models/learm/meshes/wrist_lowpoly.stl" scale="1 1 1"/>
             </geometry>
         </collision>
     </link>
