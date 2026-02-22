@@ -43,8 +43,8 @@ def _load_iris_sdf():
         "package://ardupilot_gazebo/models/iris_with_standoffs",
     )
     sdf = sdf.replace(
-        "model://iris_with_arm",
-        "package://ardupilot_gz_description/models/iris_with_arm",
+        "model://learm",
+        "package://ardupilot_gz_description/models/learm",
     )
     if "GZ_SIM_RESOURCE_PATH" in os.environ:
         gz_path = os.environ["GZ_SIM_RESOURCE_PATH"]
