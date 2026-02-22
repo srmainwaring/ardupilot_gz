@@ -16,21 +16,31 @@
         </inertia>
       </inertial>
       <collision name="arm_base_link_collision">
-        <pose>0 0 0 0 0 0</pose>
+        <pose>0 0 0.032 0 0 0</pose>
+        <!-- <pose>0 0 0 0 0 0</pose> -->
         <geometry>
           <cylinder>
-            <radius>0.03</radius>
-            <length>0.06</length>
+            <radius>0.06</radius>
+            <length>0.08</length>
           </cylinder>
+          <!-- <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/base_lowpoly.stl</uri>
+          </mesh> -->
         </geometry>
       </collision>
       <visual name="arm_base_link_visual">
+        <!-- <pose>0 0 0.032 0 0 0</pose> -->
         <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <cylinder>
-            <radius>0.03</radius>
-            <length>0.06</length>
-          </cylinder>
+          <!-- <cylinder>
+            <radius>0.06</radius>
+            <length>0.08</length>
+          </cylinder> -->
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/base.dae</uri>
+          </mesh>
         </geometry>
         <material>
           <ambient>0.1 0.1 0.1</ambient>
@@ -115,14 +125,14 @@
       <collision name="shoulder_link_collision">
         <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <cylinder>
+          <!-- <cylinder>
             <radius>0.04</radius>
             <length>0.025</length>
-          </cylinder>
-          <!-- <mesh>
+          </cylinder> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/shoulder.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/shoulder_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="shoulder_link_visual">
@@ -130,7 +140,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/shoulder.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/shoulder.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -175,16 +185,16 @@
         </inertia>
       </inertial>
       <collision name="humerus_link_collision">
-        <pose>0 0 0.04 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
+        <!-- <pose>0 0 0.04 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.025 0.05 0.08</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/humerus.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/humerus_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="humerus_link_visual">
@@ -192,7 +202,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/humerus.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/humerus.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -237,16 +247,16 @@
         </inertia>
       </inertial>
       <collision name="forearm_link_collision">
-        <pose>0 0 0.03 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
+        <!-- <pose>0 0 0.03 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.025 0.04 0.06</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/forearm.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/forearm_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="forearm_link_visual">
@@ -254,7 +264,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/forearm.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/forearm.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -299,16 +309,16 @@
         </inertia>
       </inertial>
       <collision name="wrist_link_collision">
-        <!-- <pose>0 0 0 0 0 0</pose> -->
-        <pose>0.01 0 0.02 0 0 0</pose>
+        <pose>0 0 0 0 0 0</pose>
+        <!-- <pose>0.01 0 0.02 0 0 0</pose> -->
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.04 0.03 0.06</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/wrist.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/wrist_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="wrist_link_visual">
@@ -316,7 +326,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/wrist.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/wrist.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -361,16 +371,16 @@
         </inertia>
       </inertial>
       <collision name="hand_link_collision">
-        <pose>0.02 0 0.03 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
+        <!-- <pose>0.02 0 0.03 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.04 0.04 0.02</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/hand.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/hand_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="hand_link_visual">
@@ -378,7 +388,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/hand.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/hand.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -479,16 +489,16 @@
         </inertia>
       </inertial>
       <collision name="grip_left_link_collision">
-        <pose>0 0 0.01 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
+        <!-- <pose>0 0 0.01 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.004 0.015 0.04</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal-left.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal_left_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="grip_left_link_visual">
@@ -496,7 +506,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal-left.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal_left.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -540,16 +550,16 @@
         </inertia>
       </inertial>
       <collision name="finger_left_link_collision">
-        <pose>0 -0.01 0.025 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
+        <!-- <pose>0 -0.01 0.025 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.01 0.06</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/finger_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="finger_left_link_visual">
@@ -557,7 +567,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -601,16 +611,16 @@
         </inertia>
       </inertial>
       <collision name="grip_right_link_collision">
-        <pose>0 0 0.01 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
+        <!-- <pose>0 0 0.01 0 0 0</pose> -->
+        <pose>0 0 0 0 0 0</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.015 0.04</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal-right.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal_right_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="grip_right_link_visual">
@@ -618,7 +628,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal-right.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/carpal_right.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -662,16 +672,16 @@
         </inertia>
       </inertial>
       <collision name="finger_right_link_collision">
-        <pose>0 0.01 0.025 0 0 3.1415899999999999</pose>
-        <!-- <pose>0 0 0 0 0 3.1415899999999999</pose> -->
+        <!-- <pose>0 0.01 0.025 0 0 3.1415899999999999</pose> -->
+        <pose>0 0 0 0 0 3.1415899999999999</pose>
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.005 0.01 0.06</size>
-          </box>
-          <!-- <mesh>
+          </box> -->
+          <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.stl</uri>
-          </mesh> -->
+            <uri>package://ardupilot_gz_description/models/learm/meshes/finger_lowpoly.stl</uri>
+          </mesh>
         </geometry>
       </collision>
       <visual name="finger_right_link_visual">
@@ -679,7 +689,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/finger.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -731,7 +741,7 @@
           </box> -->
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon_lowpoly.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -740,7 +750,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.dae</uri>
           </mesh>
         </geometry>
         <material>
@@ -792,7 +802,7 @@
           </box> -->
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon_lowpoly.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -801,7 +811,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.stl</uri>
+            <uri>package://ardupilot_gz_description/models/learm/meshes/tendon.dae</uri>
           </mesh>
         </geometry>
         <material>
