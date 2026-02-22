@@ -3,12 +3,20 @@ import os
 
 from launch import LaunchDescription
 from launch.actions import (
-    DeclareLaunchArgument, OpaqueFunction,
-    ExecuteProcess, RegisterEventHandler, TimerAction,
+    DeclareLaunchArgument,
+    OpaqueFunction,
+    ExecuteProcess,
+    RegisterEventHandler,
+    TimerAction,
 )
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessStart
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command, FindExecutable
+from launch.substitutions import (
+    LaunchConfiguration,
+    PathJoinSubstitution,
+    Command,
+    FindExecutable,
+)
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
@@ -30,10 +38,14 @@ def _load_iris_sdf():
     pkg_gz = get_package_share_directory("ardupilot_gz_description")
     with open(os.path.join(pkg_gz, "models", "iris_with_arm", "model.sdf"), "r") as f:
         sdf = f.read()
-    sdf = sdf.replace("model://iris_with_standoffs",
-                       "package://ardupilot_gazebo/models/iris_with_standoffs")
-    sdf = sdf.replace("model://iris_with_arm",
-                       "package://ardupilot_gz_description/models/iris_with_arm")
+    sdf = sdf.replace(
+        "model://iris_with_standoffs",
+        "package://ardupilot_gazebo/models/iris_with_standoffs",
+    )
+    sdf = sdf.replace(
+        "model://iris_with_arm",
+        "package://ardupilot_gz_description/models/iris_with_arm",
+    )
     if "GZ_SIM_RESOURCE_PATH" in os.environ:
         gz_path = os.environ["GZ_SIM_RESOURCE_PATH"]
         os.environ["SDF_PATH"] = os.environ.get("SDF_PATH", "") + ":" + gz_path
@@ -52,26 +64,31 @@ def launch_setup(context, *args, **kwargs):
         parameters=[robot_description_full, {"frame_prefix": ""}],
     )
 
-    srdf_path = os.path.join(get_package_share_directory(PKG), "srdf", "iris_with_arm.srdf")
+    srdf_path = os.path.join(
+        get_package_share_directory(PKG), "srdf", "iris_with_arm.srdf"
+    )
     with open(srdf_path, "r") as f:
         srdf_content = f.read()
     robot_description_semantic = {"robot_description_semantic": srdf_content}
 
-    robot_description_kinematics = {"robot_description_kinematics": load_yaml(PKG, "config/kinematics.yaml")}
+    robot_description_kinematics = {
+        "robot_description_kinematics": load_yaml(PKG, "config/kinematics.yaml")
+    }
 
     ompl_planning_pipeline_config = {
         "move_group": {
             "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters":
-                "default_planner_request_adapters/AddTimeOptimalParameterization "
-                "default_planner_request_adapters/FixWorkspaceBounds "
-                "default_planner_request_adapters/FixStartStateBounds "
-                "default_planner_request_adapters/FixStartStateCollision "
-                "default_planner_request_adapters/FixStartStatePathConstraints",
+            "request_adapters": "default_planner_request_adapters/AddTimeOptimalParameterization "
+            "default_planner_request_adapters/FixWorkspaceBounds "
+            "default_planner_request_adapters/FixStartStateBounds "
+            "default_planner_request_adapters/FixStartStateCollision "
+            "default_planner_request_adapters/FixStartStatePathConstraints",
             "start_state_max_bounds_error": 0.1,
         }
     }
-    ompl_planning_pipeline_config["move_group"].update(load_yaml(PKG, "config/ompl_planning.yaml"))
+    ompl_planning_pipeline_config["move_group"].update(
+        load_yaml(PKG, "config/ompl_planning.yaml")
+    )
 
     moveit_controllers = {
         "moveit_simple_controller_manager": load_yaml(PKG, "config/controllers.yaml"),
@@ -92,11 +109,16 @@ def launch_setup(context, *args, **kwargs):
         "publish_transforms_updates": True,
     }
 
-    arm_urdf_content = Command([
-        PathJoinSubstitution([FindExecutable(name="xacro")]), " ",
-        PathJoinSubstitution([FindPackageShare(PKG), "urdf", "learm.urdf.xacro"]),
-    ])
-    arm_robot_description = {"robot_description": ParameterValue(arm_urdf_content, value_type=str)}
+    arm_urdf_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution([FindPackageShare(PKG), "urdf", "learm.urdf.xacro"]),
+        ]
+    )
+    arm_robot_description = {
+        "robot_description": ParameterValue(arm_urdf_content, value_type=str)
+    }
 
     ros2_controllers_path = os.path.join(
         get_package_share_directory(PKG), "config", "ros2_controllers.yaml"
@@ -110,25 +132,45 @@ def launch_setup(context, *args, **kwargs):
     )
 
     jsb_spawner = ExecuteProcess(
-        cmd=["ros2", "run", "controller_manager", "spawner",
-             "joint_state_broadcaster", "--controller-manager", "/controller_manager",
-             "--controller-manager-timeout", "30"],
+        cmd=[
+            "ros2",
+            "run",
+            "controller_manager",
+            "spawner",
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+            "--controller-manager-timeout",
+            "30",
+        ],
         output="screen",
     )
     arm_spawner = ExecuteProcess(
-        cmd=["ros2", "run", "controller_manager", "spawner",
-             "arm_controller", "--controller-manager", "/controller_manager",
-             "--controller-manager-timeout", "30"],
+        cmd=[
+            "ros2",
+            "run",
+            "controller_manager",
+            "spawner",
+            "arm_controller",
+            "--controller-manager",
+            "/controller_manager",
+            "--controller-manager-timeout",
+            "30",
+        ],
         output="screen",
     )
-    delayed_jsb = RegisterEventHandler(event_handler=OnProcessStart(
-        target_action=ros2_control_node,
-        on_start=[TimerAction(period=3.0, actions=[jsb_spawner])],
-    ))
-    delayed_arm = RegisterEventHandler(event_handler=OnProcessStart(
-        target_action=ros2_control_node,
-        on_start=[TimerAction(period=6.0, actions=[arm_spawner])],
-    ))
+    delayed_jsb = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=ros2_control_node,
+            on_start=[TimerAction(period=3.0, actions=[jsb_spawner])],
+        )
+    )
+    delayed_arm = RegisterEventHandler(
+        event_handler=OnProcessStart(
+            target_action=ros2_control_node,
+            on_start=[TimerAction(period=6.0, actions=[arm_spawner])],
+        )
+    )
 
     static_tf = Node(
         package="tf2_ros",
@@ -143,9 +185,13 @@ def launch_setup(context, *args, **kwargs):
         executable="move_group",
         output="screen",
         parameters=[
-            robot_description_full, robot_description_semantic, robot_description_kinematics,
-            ompl_planning_pipeline_config, trajectory_execution,
-            moveit_controllers, planning_scene_monitor,
+            robot_description_full,
+            robot_description_semantic,
+            robot_description_kinematics,
+            ompl_planning_pipeline_config,
+            trajectory_execution,
+            moveit_controllers,
+            planning_scene_monitor,
             {"use_sim_time": False},
         ],
     )
@@ -156,21 +202,35 @@ def launch_setup(context, *args, **kwargs):
         executable="rviz2",
         name="rviz2_moveit",
         output="log",
-        arguments=["-d", PathJoinSubstitution([FindPackageShare(PKG), "rviz", "iris_arm_moveit.rviz"])],
+        arguments=[
+            "-d",
+            PathJoinSubstitution(
+                [FindPackageShare(PKG), "rviz", "iris_arm_moveit.rviz"]
+            ),
+        ],
         parameters=[
-            robot_description_full, robot_description_semantic,
-            ompl_planning_pipeline_config, robot_description_kinematics,
+            robot_description_full,
+            robot_description_semantic,
+            ompl_planning_pipeline_config,
+            robot_description_kinematics,
         ],
     )
 
     return [
-        static_tf, robot_state_pub, ros2_control_node,
-        delayed_jsb, delayed_arm, move_group, rviz,
+        static_tf,
+        robot_state_pub,
+        ros2_control_node,
+        delayed_jsb,
+        delayed_arm,
+        move_group,
+        rviz,
     ]
 
 
 def generate_launch_description():
-    return LaunchDescription([
-        DeclareLaunchArgument("launch_rviz", default_value="true"),
-        OpaqueFunction(function=launch_setup),
-    ])
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument("launch_rviz", default_value="true"),
+            OpaqueFunction(function=launch_setup),
+        ]
+    )
