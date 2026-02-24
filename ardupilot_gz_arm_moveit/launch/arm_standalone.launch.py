@@ -35,8 +35,6 @@ def load_yaml(package_name, file_path):
 
 
 def launch_setup(context, *args, **kwargs):
-    use_sim_time = LaunchConfiguration("use_sim_time")
-    launch_rviz = LaunchConfiguration("launch_rviz")
 
     robot_description_content = Command(
         [
@@ -176,13 +174,12 @@ def launch_setup(context, *args, **kwargs):
             trajectory_execution,
             moveit_controllers,
             planning_scene_monitor,
-            {"use_sim_time": use_sim_time},
+            {"use_sim_time": LaunchConfiguration("use_sim_time")},
         ],
     )
 
     rviz = Node(
         package="rviz2",
-        condition=IfCondition(launch_rviz),
         executable="rviz2",
         name="rviz2_moveit",
         output="log",
@@ -196,6 +193,7 @@ def launch_setup(context, *args, **kwargs):
             ompl_planning_pipeline_config,
             robot_description_kinematics,
         ],
+        condition=IfCondition(LaunchConfiguration("rviz")),
     )
 
     return [
@@ -212,8 +210,10 @@ def launch_setup(context, *args, **kwargs):
 def generate_launch_description():
     return LaunchDescription(
         [
+            DeclareLaunchArgument(
+                "rviz", default_value="true", description="Open RViz."
+            ),
             DeclareLaunchArgument("use_sim_time", default_value="false"),
-            DeclareLaunchArgument("launch_rviz", default_value="true"),
             OpaqueFunction(function=launch_setup),
         ]
     )
