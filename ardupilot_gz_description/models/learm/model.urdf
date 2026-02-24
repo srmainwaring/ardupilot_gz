@@ -12,7 +12,7 @@
             </geometry>
             <material name="arm_base_linkarm_base_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -35,7 +35,7 @@
             </geometry>
             <material name="camera_linkcamera_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
     </link>
@@ -52,7 +52,7 @@
             </geometry>
             <material name="camera_wrist_linkcamera_wrist_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
     </link>
@@ -69,7 +69,7 @@
             </geometry>
             <material name="finger_left_linkfinger_left_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -92,7 +92,7 @@
             </geometry>
             <material name="finger_right_linkfinger_right_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -115,7 +115,7 @@
             </geometry>
             <material name="forearm_linkforearm_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -138,7 +138,7 @@
             </geometry>
             <material name="grip_left_linkgrip_left_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -161,7 +161,7 @@
             </geometry>
             <material name="grip_right_linkgrip_right_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -184,7 +184,7 @@
             </geometry>
             <material name="hand_linkhand_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -207,7 +207,7 @@
             </geometry>
             <material name="humerus_linkhumerus_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -230,7 +230,7 @@
             </geometry>
             <material name="shoulder_linkshoulder_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -253,7 +253,7 @@
             </geometry>
             <material name="tendon_left_linktendon_left_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -276,7 +276,7 @@
             </geometry>
             <material name="tendon_right_linktendon_right_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
@@ -299,7 +299,7 @@
             </geometry>
             <material name="wrist_linkwrist_link_visual">
                 <texture/>
-                <color rgba="0.12 0.12 0.12 1.2"/>
+                <color rgba="0.12 0.12 0.12 1."/>
             </material>
         </visual>
         <collision>
