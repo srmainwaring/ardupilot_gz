@@ -214,7 +214,7 @@ def launch_setup(context, *args, **kwargs):
 
     moveit_gz_bridge = Node(
         package=PKG_BRIDGE,
-        executable="moveit_to_gz_bridge.py",
+        executable="moveit_to_gz_bridge",
         name="moveit_to_gz_bridge",
         output="screen",
     )
