@@ -22,7 +22,8 @@ from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
 
-PKG = "ardupilot_gz_arm_moveit"
+PKG_CONFIG = "ardupilot_gz_arm_moveit"
+PKG_BRIDGE = "ardupilot_gz_arm_moveit_gz_bridge"
 
 
 def load_yaml(package_name, file_path):
@@ -56,14 +57,14 @@ def launch_setup(context, *args, **kwargs):
     robot_description_full = {"robot_description": _load_iris_sdf()}
 
     srdf_path = os.path.join(
-        get_package_share_directory(PKG), "srdf", "iris_with_arm.srdf"
+        get_package_share_directory(PKG_CONFIG), "srdf", "iris_with_arm.srdf"
     )
     with open(srdf_path, "r") as f:
         srdf_content = f.read()
     robot_description_semantic = {"robot_description_semantic": srdf_content}
 
     robot_description_kinematics = {
-        "robot_description_kinematics": load_yaml(PKG, "config/kinematics.yaml")
+        "robot_description_kinematics": load_yaml(PKG_CONFIG, "config/kinematics.yaml")
     }
 
     ompl_planning_pipeline_config = {
@@ -78,11 +79,13 @@ def launch_setup(context, *args, **kwargs):
         }
     }
     ompl_planning_pipeline_config["move_group"].update(
-        load_yaml(PKG, "config/ompl_planning.yaml")
+        load_yaml(PKG_CONFIG, "config/ompl_planning.yaml")
     )
 
     moveit_controllers = {
-        "moveit_simple_controller_manager": load_yaml(PKG, "config/controllers.yaml"),
+        "moveit_simple_controller_manager": load_yaml(
+            PKG_CONFIG, "config/controllers.yaml"
+        ),
         "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
 
@@ -104,7 +107,9 @@ def launch_setup(context, *args, **kwargs):
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare(PKG), "urdf", "learm.urdf.xacro"]),
+            PathJoinSubstitution(
+                [FindPackageShare(PKG_CONFIG), "urdf", "learm.urdf.xacro"]
+            ),
         ]
     )
     arm_robot_description = {
@@ -112,7 +117,7 @@ def launch_setup(context, *args, **kwargs):
     }
 
     ros2_controllers_path = os.path.join(
-        get_package_share_directory(PKG), "config", "ros2_controllers.yaml"
+        get_package_share_directory(PKG_CONFIG), "config", "ros2_controllers.yaml"
     )
 
     ros2_control_node = Node(
@@ -194,7 +199,7 @@ def launch_setup(context, *args, **kwargs):
         arguments=[
             "-d",
             PathJoinSubstitution(
-                [FindPackageShare(PKG), "rviz", "iris_arm_moveit.rviz"]
+                [FindPackageShare(PKG_CONFIG), "rviz", "iris_arm_moveit.rviz"]
             ),
         ],
         parameters=[
@@ -208,7 +213,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     moveit_gz_bridge = Node(
-        package=PKG,
+        package=PKG_BRIDGE,
         executable="moveit_to_gz_bridge.py",
         name="moveit_to_gz_bridge",
         output="screen",
@@ -222,7 +227,9 @@ def launch_setup(context, *args, **kwargs):
         parameters=[
             {
                 "config_file": os.path.join(
-                    get_package_share_directory(PKG), "config", "arm_joint_bridge.yaml"
+                    get_package_share_directory(PKG_CONFIG),
+                    "config",
+                    "arm_joint_bridge.yaml",
                 )
             }
         ],
