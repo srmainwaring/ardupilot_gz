@@ -79,10 +79,7 @@ def launch_setup(context, *args, **kwargs):
         load_yaml(PKG, "config/ompl_planning.yaml")
     )
 
-    moveit_controllers = {
-        "moveit_simple_controller_manager": load_yaml(PKG, "config/moveit_controllers.yaml"),
-        "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
-    }
+    moveit_controllers = load_yaml(PKG, "config/moveit_controllers.yaml")
 
     trajectory_execution = {
         "moveit_manage_controllers": False,
