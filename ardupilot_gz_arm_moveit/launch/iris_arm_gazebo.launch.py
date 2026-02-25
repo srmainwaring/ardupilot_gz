@@ -84,7 +84,7 @@ def launch_setup(context, *args, **kwargs):
 
     moveit_controllers = {
         "moveit_simple_controller_manager": load_yaml(
-            PKG_CONFIG, "config/controllers.yaml"
+            PKG_CONFIG, "config/moveit_controllers.yaml"
         ),
         "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager",
     }
