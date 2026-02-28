@@ -84,7 +84,7 @@ def generate_launch_description():
             ),
             launch_arguments={
                 "gz_args": "-v4 -s -r "
-                f'{Path(pkg_project_gazebo) / "worlds" / "iris_runway.sdf"}'
+                           f'{Path(pkg_project_gazebo) / "worlds" / "runway.sdf"}'
             }.items(),
         ),
         IncludeLaunchDescription(
@@ -118,7 +118,8 @@ def generate_launch_description():
                 ]
             ),
             launch_arguments={
-                "name": name,
+                "robot_name": name,
+                "world_name": "runway",
                 "x": position[0],
                 "y": position[1],
                 "z": position[2],
