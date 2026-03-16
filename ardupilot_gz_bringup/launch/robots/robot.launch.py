@@ -26,11 +26,11 @@ from launch.actions import (
     RegisterEventHandler,
 )
 from launch.conditions import IfCondition
+from launch.conditions import UnlessCondition
 from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 
 
 def replace_robot_name(input_file: str, robot_name: str, world_name: str) -> str:
@@ -187,12 +187,53 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # Ports
     port_offset = 10 * instance
+    dds_port = 2019 + port_offset
     master_port = 5760 + port_offset
     sitl_port = 5501 + port_offset
+    mavlink_out = 14550 + port_offset
     sim_address = LaunchConfiguration("sim_address").perform(context)
 
-    tty0 = f"./dev/ttyROS{instance * 10}"
-    tty1 = f"./dev/ttyROS{instance * 10 + 1}"
+    # ardupilot_sitl
+    sitl_arguments = {
+      "command": command,
+      "wipe": "False",
+      "speedup": "1",
+      "slave": "0",
+      "instance": f"{instance}",
+      "sysid": f"{sysid}",
+      "model": LaunchConfiguration("model"),
+      "defaults": LaunchConfiguration("defaults"),
+      "synthetic_clock": LaunchConfiguration("synthetic_clock"),
+      "sim_address": sim_address,
+      "master": f"tcp:{sim_address}:{master_port}",
+      "sitl": f"{sim_address}:{sitl_port}",
+      "out": f"{sim_address}:{mavlink_out}",
+      "use_instance_dir": LaunchConfiguration("use_instance_dir"),
+    }
+
+    sitl = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [
+                PathJoinSubstitution(
+                    [
+                        pkg_ardupilot_sitl,
+                        "launch",
+                        "sitl_mavproxy.launch.py",
+                    ]
+                ),
+            ]
+        ),
+        launch_arguments=sitl_arguments.items(),
+        condition=UnlessCondition(LaunchConfiguration("use_dds_agent"))
+    )
+
+    # ardupilot_sitl + micro_ros_agent
+    sitl_dds_arguments = sitl_arguments.copy()
+    sitl_dds_arguments.update({
+      "micro_ros_agent_ns": name,
+      "transport": "udp4",
+      "port": f"{dds_port}",
+    })
 
     # Include component launch files.
     sitl_dds = IncludeLaunchDescription(
@@ -200,39 +241,18 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             [
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ardupilot_sitl"),
+                        pkg_ardupilot_sitl,
                         "launch",
                         "sitl_dds_udp.launch.py",
                     ]
                 ),
             ]
         ),
-        launch_arguments={
-            # virtual_ports
-            "tty0": tty0,
-            "tty1": tty1,
-            # micro_ros_agent
-            "micro_ros_agent_ns": name,
-            "baudrate": "115200",
-            "device": tty0,
-            # ardupilot_sitl
-            "command": command,
-            "wipe": "False",
-            "speedup": "1",
-            "slave": "0",
-            "instance": f"{instance}",
-            "sysid": f"{sysid}",
-            "uartC": f"uart:{tty1}",
-            "model": LaunchConfiguration("model"),
-            "defaults": LaunchConfiguration("defaults"),
-            "synthetic_clock": LaunchConfiguration("synthetic_clock"),
-            "sim_address": sim_address,
-            "master": f"tcp:{sim_address}:{master_port}",
-            "sitl": f"{sim_address}:{sitl_port}",
-        }.items(),
+        launch_arguments=sitl_dds_arguments.items(),
+        condition=IfCondition(LaunchConfiguration("use_dds_agent"))
     )
 
-    return [sitl_dds]
+    return [sitl, sitl_dds]
 
 
 def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
@@ -259,10 +279,9 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
                 )
                 + ","
                 + os.path.join(
-                    pkg_ardupilot_sitl,
+                    pkg_ardupilot_gazebo,
                     "config",
-                    "default_params",
-                    "gazebo-iris.parm",
+                    "gazebo-iris-gimbal.parm",
                 )
                 + ","
                 + os.path.join(
@@ -292,6 +311,16 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
             "sysid",
             default_value="",
             description="Set SYSID_THISMAV.",
+        ),
+        DeclareLaunchArgument(
+            "use_instance_dir",
+            default_value="False",
+            description="If True create instance directories for the eeprom.bin.",
+        ),
+        DeclareLaunchArgument(
+            "use_dds_agent",
+            default_value="True",
+            description="If True launch the micro-ros-agent.",
         ),
         # topic_tools_tf
         DeclareLaunchArgument(
@@ -328,7 +357,7 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
         # bridge, spawn_robot
         DeclareLaunchArgument(
             "world_name",
-            default_value="maze",
+            default_value="runway",
             description="Name for the world instance.",
         ),
         DeclareLaunchArgument(
