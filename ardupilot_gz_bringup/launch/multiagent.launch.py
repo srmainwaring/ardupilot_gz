@@ -84,7 +84,7 @@ def generate_launch_description():
             ),
             launch_arguments={
                 "gz_args": "-v4 -s -r "
-                           f'{Path(pkg_project_gazebo) / "worlds" / "runway.sdf"}'
+                f'{Path(pkg_project_gazebo) / "worlds" / "runway.sdf"}'
             }.items(),
         ),
         IncludeLaunchDescription(
