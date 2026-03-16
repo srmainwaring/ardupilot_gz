@@ -137,6 +137,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
 def generate_launch_arguments() -> List[DeclareLaunchArgument]:
     """Generate a list of launch arguments."""
     pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
+    pkg_ardupilot_gazebo = get_package_share_directory("ardupilot_gazebo")
 
     return [
         # sitl_dds
@@ -156,9 +157,8 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
                 )
                 + ","
                 + os.path.join(
-                    pkg_ardupilot_sitl,
+                    pkg_ardupilot_gazebo,
                     "config",
-                    "default_params",
                     "gazebo-iris-gimbal.parm",
                 )
                 + ","
