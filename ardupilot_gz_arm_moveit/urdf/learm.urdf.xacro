@@ -282,7 +282,7 @@
   </joint>
 
   <!-- ros2_control interface for mock hardware (demo) -->
-  <ros2_control name="LeArmSystem" type="system">
+  <ros2_control name="MockHardwareSystem" type="system">
     <hardware>
       <plugin>mock_components/GenericSystem</plugin>
     </hardware>
