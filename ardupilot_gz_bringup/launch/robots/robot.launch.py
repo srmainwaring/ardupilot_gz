@@ -100,7 +100,7 @@ def launch_spawn_robot(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
 
 def launch_state_pub_with_bridge(
-        context: LaunchContext,
+    context: LaunchContext,
 ) -> List[LaunchDescriptionEntity]:
     robot_name = LaunchConfiguration("robot_name").perform(context)
     world_name = LaunchConfiguration("world_name").perform(context)
@@ -286,7 +286,7 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
             "instance",
             default_value="0",
             description="Set instance of SITL "
-                        "(adds 10*instance to all port numbers).",
+            "(adds 10*instance to all port numbers).",
         ),
         DeclareLaunchArgument(
             "sysid",

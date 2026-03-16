@@ -114,9 +114,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     with open(sdf_file_modified, "w") as temp_file:
         temp_file.write(robot_desc)
 
-    bridge_config_file = os.path.join(
-        pkg_project_bringup, "config", config_name
-    )
+    bridge_config_file = os.path.join(pkg_project_bringup, "config", config_name)
 
     robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -205,7 +203,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
             "instance",
             default_value="0",
             description="Set instance of SITL "
-                        "(adds 10*instance to all port numbers).",
+            "(adds 10*instance to all port numbers).",
         ),
         DeclareLaunchArgument(
             "sysid",
@@ -270,4 +268,6 @@ def generate_launch_description() -> LaunchDescription:
 
     launch_arguments = generate_launch_arguments()
 
-    return LaunchDescription(launch_arguments + [OpaqueFunction(function=generate_robot_launch_actions)])
+    return LaunchDescription(
+        launch_arguments + [OpaqueFunction(function=generate_robot_launch_actions)]
+    )

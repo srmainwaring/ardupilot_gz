@@ -187,7 +187,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
             "instance",
             default_value="0",
             description="Set instance of SITL "
-                        "(adds 10*instance to all port numbers).",
+            "(adds 10*instance to all port numbers).",
         ),
         DeclareLaunchArgument(
             "sysid",
@@ -241,9 +241,12 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
         ),
     ]
 
+
 def generate_launch_description() -> LaunchDescription:
     """Generate a launch description for a iris quadrotor"""
 
     launch_arguments = generate_launch_arguments()
 
-    return LaunchDescription(launch_arguments + [OpaqueFunction(function=generate_robot_launch_actions)])
+    return LaunchDescription(
+        launch_arguments + [OpaqueFunction(function=generate_robot_launch_actions)]
+    )
