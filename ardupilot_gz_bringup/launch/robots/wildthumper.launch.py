@@ -201,7 +201,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
         # bridge, spawn_robot
         DeclareLaunchArgument(
             "world_name",
-            default_value="maze",
+            default_value="playpen",
             description="Name for the world instance.",
         ),
         DeclareLaunchArgument(
@@ -221,7 +221,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
         ),
         DeclareLaunchArgument(
             "z",
-            default_value="0.2",
+            default_value="0.15",
             description="The initial 'z' position (m).",
         ),
         DeclareLaunchArgument(
