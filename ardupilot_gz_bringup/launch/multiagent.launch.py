@@ -18,13 +18,19 @@ from enum import Enum
 from pathlib import Path
 
 from ament_index_python.packages import get_package_share_directory
+
+from launch import LaunchContext
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+
+from launch.actions import DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription
+from launch.actions import OpaqueFunction
+
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration
+from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 
 
 class Vehicle(Enum):
@@ -47,6 +53,20 @@ VEHICLE_PATHS = {
         "rviz": "wildthumper.rviz",
     },
 }
+
+
+def get_default_launch_arguments(launch_description_source, context):
+    """Retrieve default launch arguments from a LaunchDescriptionSource."""
+    ild = IncludeLaunchDescription(
+        launch_description_source,
+    )
+    ld = LaunchDescription([ild])
+    default_args = {}
+    for arg in ld.get_launch_arguments():
+        name = arg.name
+        default_value = arg.default_value[0].perform(context)
+        default_args[name] = default_value
+    return default_args
 
 
 def generate_launch_description():
@@ -73,79 +93,99 @@ def generate_launch_description():
         },
     ]
 
-    launch_actions = [
-        DeclareLaunchArgument("rviz", default_value="true", description="Open RViz."),
-        DeclareLaunchArgument(
-            "gui", default_value="true", description="Run Gazebo simulation headless."
-        ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                f'{Path(pkg_ros_gz_sim) / "launch" / "gz_sim.launch.py"}'
+    def generate_launch_actions(context: LaunchContext, *args, **kwargs):
+        launch_actions = [
+            DeclareLaunchArgument(
+                "rviz", default_value="true", description="Open RViz."
             ),
-            launch_arguments={
-                "gz_args": "-v4 -s -r "
-                f'{Path(pkg_project_gazebo) / "worlds" / "runway.sdf"}'
-            }.items(),
-        ),
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                f'{Path(pkg_ros_gz_sim) / "launch" / "gz_sim.launch.py"}'
+            DeclareLaunchArgument(
+                "gui",
+                default_value="true",
+                description="Run Gazebo simulation headless.",
             ),
-            launch_arguments={"gz_args": "-v4 -g"}.items(),
-            condition=IfCondition(LaunchConfiguration("gui")),
-        ),
-    ]
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    f'{Path(pkg_ros_gz_sim) / "launch" / "gz_sim.launch.py"}'
+                ),
+                launch_arguments={
+                    "gz_args": "-v4 -s -r "
+                    f'{Path(pkg_project_gazebo) / "worlds" / "runway.sdf"}'
+                }.items(),
+            ),
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource(
+                    f'{Path(pkg_ros_gz_sim) / "launch" / "gz_sim.launch.py"}'
+                ),
+                launch_arguments={"gz_args": "-v1 -g"}.items(),
+                condition=IfCondition(LaunchConfiguration("gui")),
+            ),
+        ]
 
-    for i, robot in enumerate(robots):
-        instance = i
-        sysid = i + 1
+        for i, robot in enumerate(robots):
+            instance = i
+            sysid = i + 1
 
-        name = robot["name"]
-        model = robot["model"]
-        position = robot["position"]
+            name = robot["name"]
+            model = robot["model"]
+            position = robot["position"]
 
-        drone = IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
+            drone_lds = PythonLaunchDescriptionSource(
                 [
                     PathJoinSubstitution(
                         [
-                            FindPackageShare("ardupilot_gz_bringup"),
+                            pkg_project_bringup,
                             "launch",
                             "robots",
                             VEHICLE_PATHS[model]["launch"],
                         ]
                     ),
                 ]
-            ),
-            launch_arguments={
-                "robot_name": name,
-                "world_name": "runway",
-                "x": position[0],
-                "y": position[1],
-                "z": position[2],
-                "R": position[3],
-                "P": position[4],
-                "Y": position[5],
-                "instance": str(instance),
-                "sysid": str(sysid),
-            }.items(),
-        )
-        launch_actions.append(drone)
+            )
 
-        rviz = Node(
-            package="rviz2",
-            executable="rviz2",
-            namespace=name,
-            arguments=[
-                "-d",
-                f'{Path(pkg_project_bringup) / "rviz" / VEHICLE_PATHS[model]["rviz"]}',
-            ],
-            condition=IfCondition(LaunchConfiguration("rviz")),
-            remappings=[
-                ("/tf", "tf"),
-                ("/tf_static", "tf_static"),
-            ],
-        )
-        launch_actions.append(rviz)
+            # Create launch arguments, overriding defaults
+            drone_launch_arguments = get_default_launch_arguments(drone_lds, context)
+            drone_launch_arguments.update(
+                {
+                    "robot_name": name,
+                    "world_name": "runway",
+                    "x": position[0],
+                    "y": position[1],
+                    "z": position[2],
+                    "R": position[3],
+                    "P": position[4],
+                    "Y": position[5],
+                    "instance": str(instance),
+                    "sysid": str(sysid),
+                    "use_instance_dir": "True",
+                }
+            )
 
-    return LaunchDescription(launch_actions)
+            # Only launch a single instance of the micro_ros_agent
+            if instance > 0:
+                drone_launch_arguments.update({"use_dds_agent": "False"})
+
+            drone = IncludeLaunchDescription(
+                drone_lds,
+                launch_arguments=drone_launch_arguments.items(),
+            )
+            launch_actions.append(drone)
+
+            rviz = Node(
+                package="rviz2",
+                executable="rviz2",
+                namespace=name,
+                arguments=[
+                    "-d",
+                    f'{Path(pkg_project_bringup) / "rviz" / VEHICLE_PATHS[model]["rviz"]}',
+                ],
+                condition=IfCondition(LaunchConfiguration("rviz")),
+                remappings=[
+                    ("/tf", "tf"),
+                    ("/tf_static", "tf_static"),
+                ],
+            )
+            launch_actions.append(rviz)
+
+        return launch_actions
+
+    return LaunchDescription([OpaqueFunction(function=generate_launch_actions)])

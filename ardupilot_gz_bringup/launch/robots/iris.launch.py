@@ -47,18 +47,10 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.actions import OpaqueFunction
-from launch.actions import RegisterEventHandler
-
-from launch.conditions import IfCondition
-
-from launch.event_handlers import OnProcessStart
 
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
-
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 
 
 def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
@@ -101,7 +93,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
             [
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ardupilot_gz_bringup"),
+                        pkg_project_bringup,
                         "launch",
                         "robots",
                         "robot.launch.py",
@@ -128,6 +120,8 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
             "Y": LaunchConfiguration("Y"),
             "instance": LaunchConfiguration("instance"),
             "sysid": LaunchConfiguration("sysid"),
+            "use_instance_dir": LaunchConfiguration("use_instance_dir"),
+            "use_dds_agent": LaunchConfiguration("use_dds_agent"),
         }.items(),
     )
 
@@ -137,6 +131,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
 def generate_launch_arguments() -> List[DeclareLaunchArgument]:
     """Generate a list of launch arguments."""
     pkg_ardupilot_sitl = get_package_share_directory("ardupilot_sitl")
+    pkg_ardupilot_gazebo = get_package_share_directory("ardupilot_gazebo")
 
     return [
         # sitl_dds
@@ -156,9 +151,8 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
                 )
                 + ","
                 + os.path.join(
-                    pkg_ardupilot_sitl,
+                    pkg_ardupilot_gazebo,
                     "config",
-                    "default_params",
                     "gazebo-iris-gimbal.parm",
                 )
                 + ","
@@ -167,7 +161,14 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
                     "config",
                     "default_params",
                     "dds_udp.parm",
-                ),
+                )
+                + ","
+                + os.path.join(
+                    pkg_ardupilot_sitl,
+                    "config",
+                    "default_params",
+                    "dds_use_ns.parm",
+                )
             ),
             description="Set path to default params for the iris with DDS.",
         ),
@@ -189,6 +190,16 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
             "sysid",
             default_value="",
             description="Set SYSID_THISMAV.",
+        ),
+        DeclareLaunchArgument(
+            "use_instance_dir",
+            default_value="False",
+            description="If True create instance directories for the eeprom.bin.",
+        ),
+        DeclareLaunchArgument(
+            "use_dds_agent",
+            default_value="True",
+            description="If True launch the micro-ros-agent.",
         ),
         # topic_tools_tf
         DeclareLaunchArgument(
