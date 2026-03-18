@@ -259,10 +259,9 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
                 )
                 + ","
                 + os.path.join(
-                    pkg_ardupilot_sitl,
+                    pkg_ardupilot_gazebo,
                     "config",
-                    "default_params",
-                    "gazebo-iris.parm",
+                    "gazebo-iris-gimbal.parm",
                 )
                 + ","
                 + os.path.join(
@@ -328,7 +327,7 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
         # bridge, spawn_robot
         DeclareLaunchArgument(
             "world_name",
-            default_value="maze",
+            default_value="runway",
             description="Name for the world instance.",
         ),
         DeclareLaunchArgument(
