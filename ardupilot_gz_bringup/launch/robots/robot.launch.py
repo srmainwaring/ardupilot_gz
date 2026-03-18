@@ -189,6 +189,7 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     dds_port = 2019 + port_offset
     master_port = 5760 + port_offset
     sitl_port = 5501 + port_offset
+    mavlink_out = 14550 + port_offset
     sim_address = LaunchConfiguration("sim_address").perform(context)
 
     # Include component launch files.
@@ -222,6 +223,7 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             "sim_address": sim_address,
             "master": f"tcp:{sim_address}:{master_port}",
             "sitl": f"{sim_address}:{sitl_port}",
+            "out": f"{sim_address}:{mavlink_out}",
         }.items(),
     )
 
