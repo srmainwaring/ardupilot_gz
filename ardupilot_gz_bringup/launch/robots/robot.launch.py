@@ -30,7 +30,6 @@ from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 
 
 def replace_robot_name(input_file: str, robot_name: str, world_name: str) -> str:
@@ -200,7 +199,7 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             [
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ardupilot_sitl"),
+                        pkg_ardupilot_sitl,
                         "launch",
                         "sitl_dds_udp.launch.py",
                     ]

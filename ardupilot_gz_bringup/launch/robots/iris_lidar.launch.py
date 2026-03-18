@@ -47,18 +47,10 @@ from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.actions import LogInfo
 from launch.actions import OpaqueFunction
-from launch.actions import RegisterEventHandler
-
-from launch.conditions import IfCondition
-
-from launch.event_handlers import OnProcessStart
 
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
-
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 
 
 def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
@@ -119,7 +111,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
             [
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ardupilot_gz_bringup"),
+                        pkg_project_bringup,
                         "launch",
                         "robots",
                         "robot.launch.py",
