@@ -63,14 +63,12 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     """Launch the robot_state_publisher and ros_gz bridge nodes."""
-    pkg_ardupilot_gz_description = get_package_share_directory(
-        "ardupilot_gz_description"
-    )
+    pkg_project_description = get_package_share_directory("ardupilot_gz_description")
     pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
 
     # Load SDF file.
     sdf_file = os.path.join(
-        pkg_ardupilot_gz_description, "models", "iris_with_lidar", "model.sdf"
+        pkg_project_description, "models", "iris_with_lidar", "model.sdf"
     )
     with open(sdf_file, "r") as infp:
         robot_desc = infp.read()
