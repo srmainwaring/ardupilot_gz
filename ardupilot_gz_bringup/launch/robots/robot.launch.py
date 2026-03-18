@@ -186,12 +186,10 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # Ports
     port_offset = 10 * instance
+    dds_port = 2019 + port_offset
     master_port = 5760 + port_offset
     sitl_port = 5501 + port_offset
     sim_address = LaunchConfiguration("sim_address").perform(context)
-
-    tty0 = f"./dev/ttyROS{instance * 10}"
-    tty1 = f"./dev/ttyROS{instance * 10 + 1}"
 
     # Include component launch files.
     sitl_dds = IncludeLaunchDescription(
@@ -207,13 +205,10 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             ]
         ),
         launch_arguments={
-            # virtual_ports
-            "tty0": tty0,
-            "tty1": tty1,
             # micro_ros_agent
             "micro_ros_agent_ns": name,
-            "baudrate": "115200",
-            "device": tty0,
+            "transport": "udp4",
+            "port": f"{dds_port}",
             # ardupilot_sitl
             "command": command,
             "wipe": "False",
@@ -221,7 +216,6 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             "slave": "0",
             "instance": f"{instance}",
             "sysid": f"{sysid}",
-            "uartC": f"uart:{tty1}",
             "model": LaunchConfiguration("model"),
             "defaults": LaunchConfiguration("defaults"),
             "synthetic_clock": LaunchConfiguration("synthetic_clock"),
