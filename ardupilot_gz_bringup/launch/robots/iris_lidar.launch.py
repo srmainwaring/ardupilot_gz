@@ -138,6 +138,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
             "Y": LaunchConfiguration("Y"),
             "instance": LaunchConfiguration("instance"),
             "sysid": LaunchConfiguration("sysid"),
+            "use_instance_dir": LaunchConfiguration("use_instance_dir"),
         }.items(),
     )
 
@@ -199,6 +200,11 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
             "sysid",
             default_value="",
             description="Set SYSID_THISMAV.",
+        ),
+        DeclareLaunchArgument(
+            "use_instance_dir",
+            default_value="False",
+            description="If True create instance directories for the eeprom.bin.",
         ),
         # topic_tools_tf
         DeclareLaunchArgument(

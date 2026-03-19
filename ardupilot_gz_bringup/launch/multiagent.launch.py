@@ -55,6 +55,20 @@ VEHICLE_PATHS = {
 }
 
 
+def get_default_launch_arguments(launch_description_source, context):
+    """Retrieve default launch arguments from a LaunchDescriptionSource."""
+    ild = IncludeLaunchDescription(
+        launch_description_source,
+    )
+    ld = LaunchDescription([ild])
+    default_args = {}
+    for arg in ld.get_launch_arguments():
+        name = arg.name
+        default_value = arg.default_value[0].perform(context)
+        default_args[name] = default_value
+    return default_args
+
+
 def generate_launch_description():
     """Generate a launch description for a iris quadcopter."""
     pkg_project_bringup = get_package_share_directory("ardupilot_gz_bringup")
@@ -128,21 +142,9 @@ def generate_launch_description():
                 ]
             )
 
-            def get_default_launch_arguments(launch_description_source, context):
-                ild = IncludeLaunchDescription(
-                    launch_description_source,
-                )
-                ld = LaunchDescription([ild])
-                default_args = {}
-                for arg in ld.get_launch_arguments():
-                    name = arg.name
-                    default_value = arg.default_value[0].perform(context)
-                    default_args[name] = default_value
-                return default_args
-
             # Create launch arguments, overriding defaults
-            launch_arguments = get_default_launch_arguments(drone_lds, context)
-            launch_arguments.update(
+            drone_launch_arguments = get_default_launch_arguments(drone_lds, context)
+            drone_launch_arguments.update(
                 {
                     "robot_name": name,
                     "world_name": "runway",
@@ -154,12 +156,13 @@ def generate_launch_description():
                     "Y": position[5],
                     "instance": str(instance),
                     "sysid": str(sysid),
+                    "use_instance_dir": "True",
                 }
             )
 
             drone = IncludeLaunchDescription(
                 drone_lds,
-                launch_arguments=launch_arguments.items(),
+                launch_arguments=drone_launch_arguments.items(),
             )
             launch_actions.append(drone)
 

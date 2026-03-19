@@ -224,6 +224,7 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             "master": f"tcp:{sim_address}:{master_port}",
             "sitl": f"{sim_address}:{sitl_port}",
             "out": f"{sim_address}:{mavlink_out}",
+            "use_instance_dir": LaunchConfiguration("use_instance_dir"),
         }.items(),
     )
 
@@ -286,6 +287,11 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
             "sysid",
             default_value="",
             description="Set SYSID_THISMAV.",
+        ),
+        DeclareLaunchArgument(
+            "use_instance_dir",
+            default_value="False",
+            description="If True create instance directories for the eeprom.bin.",
         ),
         # topic_tools_tf
         DeclareLaunchArgument(
