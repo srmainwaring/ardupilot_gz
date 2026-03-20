@@ -25,6 +25,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.actions import OpaqueFunction
+from launch.actions import TimerAction
 
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -37,6 +38,7 @@ class Vehicle(Enum):
     IRIS = "iris_with_gimbal"
     IRIS_LIDAR = "iris_lidar"
     WILD_THUMPER = "wildthumper"
+    ALTI_TRANSITION = "alti_transition"
 
 
 VEHICLE_PATHS = {
@@ -51,6 +53,10 @@ VEHICLE_PATHS = {
     Vehicle.WILD_THUMPER: {
         "launch": "wildthumper.launch.py",
         "rviz": "wildthumper.rviz",
+    },
+    Vehicle.ALTI_TRANSITION: {
+        "launch": "alti_transition.launch.py",
+        "rviz": "alti_transition.rviz",
     },
 }
 
@@ -90,6 +96,11 @@ def generate_launch_description():
             "name": "rover1",
             "model": Vehicle.WILD_THUMPER,
             "position": ["-1.0", "0.0", "0.195", "0", "0", "1.5708"],
+        },
+        {
+            "name": "plane1",
+            "model": Vehicle.ALTI_TRANSITION,
+            "position": ["-4.0", "0.0", "0.195", "0", "0", "1.5708"],
         },
     ]
 
@@ -168,7 +179,8 @@ def generate_launch_description():
                 drone_lds,
                 launch_arguments=drone_launch_arguments.items(),
             )
-            launch_actions.append(drone)
+            delayed_drone = TimerAction(period=float(i * 2.0), actions=[drone])
+            launch_actions.append(delayed_drone)
 
             rviz = Node(
                 package="rviz2",
