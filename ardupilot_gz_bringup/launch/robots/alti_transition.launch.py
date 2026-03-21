@@ -183,7 +183,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
         # bridge, spawn_robot
         DeclareLaunchArgument(
             "world_name",
-            default_value="playpen",
+            default_value="runway",
             description="Name for the world instance.",
         ),
         DeclareLaunchArgument(
