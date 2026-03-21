@@ -148,7 +148,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
                     "config",
                     "default_params",
                     "dds_udp.parm",
-                ),
+                )
             ),
             description="Set path to default params for the robot with DDS.",
         ),
