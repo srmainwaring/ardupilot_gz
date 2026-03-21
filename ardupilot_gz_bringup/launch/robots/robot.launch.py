@@ -265,7 +265,7 @@ def generate_launch_arguments() -> List[LaunchDescriptionEntity]:
                     "config",
                     "default_params",
                     "dds_udp.parm",
-                ),
+                )
             ),
             description="Set path to default params for the iris with DDS.",
         ),
