@@ -1,0 +1,251 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="mocap">
+    <physics name="1ms" type="ignore">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin name="gz::sim::systems::Physics"
+      filename="gz-sim-physics-system">
+    </plugin>
+    <plugin name="gz::sim::systems::Sensors"
+      filename="gz-sim-sensors-system">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin name="gz::sim::systems::UserCommands"
+      filename="gz-sim-user-commands-system">
+    </plugin>
+    <plugin name="gz::sim::systems::SceneBroadcaster"
+      filename="gz-sim-scene-broadcaster-system">
+    </plugin>
+    <plugin name="gz::sim::systems::Imu"
+      filename="gz-sim-imu-system">
+    </plugin>
+
+    <scene>
+      <ambient>1.0 1.0 1.0</ambient>
+      <background>0.8 0.8 0.8</background>
+      <sky></sky>
+    </scene>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.8 0.8 0.8 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.8 0.8 0.8 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cameras. -->
+    <model name="camera_1">
+      <static>1</static>
+      <pose degrees="true">5 5 5 0 45 -135</pose>
+      <link name="camera_link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>0.01 0.01 0.01 1</specular>
+          </material>
+        </visual>
+        <sensor name="camera" type="camera">
+          <gz_frame_id>camera_link</gz_frame_id>
+          <pose degrees="true">0 0 0 0 0 0</pose>
+          <camera>
+            <horizontal_fov>2.0</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+            </image>
+            <clip>
+              <near>0.05</near>
+              <far>15000</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>10</update_rate>
+          <visualize>1</visualize>
+          <plugin name="GstCameraPlugin"
+              filename="GstCameraPlugin">
+            <udp_host>127.0.0.1</udp_host>
+            <udp_port>5610</udp_port>
+            <use_basic_pipeline>true</use_basic_pipeline>
+            <use_cuda>false</use_cuda>
+          </plugin>
+        </sensor>
+      </link>
+    </model>
+
+    <model name="camera_2">
+      <static>1</static>
+      <pose degrees="true">-5 5 5 0 45 -45</pose>
+      <link name="camera_link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>0.01 0.01 0.01 1</specular>
+          </material>
+        </visual>
+        <sensor name="camera" type="camera">
+          <gz_frame_id>camera_link</gz_frame_id>
+          <pose degrees="true">0 0 0 0 0 0</pose>
+          <camera>
+            <horizontal_fov>2.0</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+            </image>
+            <clip>
+              <near>0.05</near>
+              <far>15000</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>10</update_rate>
+          <visualize>1</visualize>
+          <plugin name="GstCameraPlugin"
+              filename="GstCameraPlugin">
+            <udp_host>127.0.0.1</udp_host>
+            <udp_port>5620</udp_port>
+            <use_basic_pipeline>true</use_basic_pipeline>
+            <use_cuda>false</use_cuda>
+          </plugin>
+        </sensor>
+      </link>
+    </model>
+
+    <model name="camera_3">
+      <static>1</static>
+      <pose degrees="true">-5 -5 5 0 45 45</pose>
+      <link name="camera_link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>0.01 0.01 0.01 1</specular>
+          </material>
+        </visual>
+        <sensor name="camera" type="camera">
+          <gz_frame_id>camera_link</gz_frame_id>
+          <pose degrees="true">0 0 0 0 0 0</pose>
+          <camera>
+            <horizontal_fov>2.0</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+            </image>
+            <clip>
+              <near>0.05</near>
+              <far>15000</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>10</update_rate>
+          <visualize>1</visualize>
+          <plugin name="GstCameraPlugin"
+              filename="GstCameraPlugin">
+            <udp_host>127.0.0.1</udp_host>
+            <udp_port>5630</udp_port>
+            <use_basic_pipeline>true</use_basic_pipeline>
+            <use_cuda>false</use_cuda>
+          </plugin>
+        </sensor>
+      </link>
+    </model>
+
+    <model name="camera_4">
+      <static>1</static>
+      <pose degrees="true">5 -5 5 0 45 135</pose>
+      <link name="camera_link">
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.1 0.1</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
+            <specular>0.01 0.01 0.01 1</specular>
+          </material>
+        </visual>
+        <sensor name="camera" type="camera">
+          <gz_frame_id>camera_link</gz_frame_id>
+          <pose degrees="true">0 0 0 0 0 0</pose>
+          <camera>
+            <horizontal_fov>2.0</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+            </image>
+            <clip>
+              <near>0.05</near>
+              <far>15000</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>10</update_rate>
+          <visualize>1</visualize>
+          <plugin name="GstCameraPlugin"
+              filename="GstCameraPlugin">
+            <udp_host>127.0.0.1</udp_host>
+            <udp_port>5640</udp_port>
+            <use_basic_pipeline>true</use_basic_pipeline>
+            <use_cuda>false</use_cuda>
+          </plugin>
+        </sensor>
+      </link>
+    </model>
+
+  </world>
+</sdf>
