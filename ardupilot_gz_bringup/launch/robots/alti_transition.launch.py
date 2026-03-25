@@ -18,6 +18,7 @@ Launch an alti-transition quadplane in Gazebo and Rviz.
 """
 from typing import List
 
+import math
 import os
 import tempfile
 
@@ -231,7 +232,7 @@ def generate_launch_arguments() -> List[DeclareLaunchArgument]:
         ),
         DeclareLaunchArgument(
             "Y",
-            default_value="0.0",
+            default_value=f"{math.radians(90)}",
             description="The initial yaw angle (radians).",
         ),
     ]
