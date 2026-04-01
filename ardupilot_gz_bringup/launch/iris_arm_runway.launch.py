@@ -1,4 +1,4 @@
-# Copyright 2023 ArduPilot.org.
+# Copyright 2026 ArduPilot.org.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,22 +12,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-# Adapted from https://github.com/gazebosim/ros_gz_project_template
-#
-# Copyright 2019 Open Source Robotics Foundation, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 """Launch an iris quadcopter with arm in Gazebo and Rviz."""
 from pathlib import Path
@@ -93,11 +77,16 @@ def generate_launch_description():
     rviz = Node(
         package="rviz2",
         executable="rviz2",
+        namespace="iris",
         arguments=[
             "-d",
-            f'{Path(pkg_project_bringup) / "rviz" / "iris.rviz"}',
+            f'{Path(pkg_project_bringup) / "rviz" / "iris_with_arm.rviz"}',
         ],
         condition=IfCondition(LaunchConfiguration("rviz")),
+        remappings=[
+            ("/tf", "tf"),
+            ("/tf_static", "tf_static"),
+        ],
     )
 
     return LaunchDescription(
