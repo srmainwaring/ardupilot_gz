@@ -1,0 +1,29 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: ardupilot_gz_description
+    relative_path: models/iris_with_arm/model.urdf
+  srdf:
+    relative_path: config/iris_with_arm.srdf
+  package_settings:
+    author_name: Rhys Mainwaring
+    author_email: rhys.mainwaring@me.com
+    generated_timestamp: 1775130732
+  control_xacro:
+    command:
+      - position
+      - effort
+    state:
+      - position
+      - velocity
+      - effort
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+      - effort
+    state:
+      - position
+      - velocity
+      - effort
