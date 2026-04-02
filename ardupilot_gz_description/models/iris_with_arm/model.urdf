@@ -227,9 +227,33 @@
             </material>
         </visual>
         <collision>
-            <origin xyz="0 0 -0.08" rpy="0 -0 0"/>
+            <origin xyz="0 0 0" rpy="0 -0 0"/>
             <geometry>
-                <box size="0.47 0.47 0.23"/>
+                <mesh filename="package://ardupilot_gazebo/models/iris_with_standoffs/meshes/iris_collision.stl" scale="1 1 1"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="0.123 0.22 -0.11" rpy="0 -0 0"/>
+            <geometry>
+                <cylinder radius="0.005" length="0.17"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="0.123 -0.22 -0.11" rpy="0 -0 0"/>
+            <geometry>
+                <cylinder radius="0.005" length="0.17"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.14 0.21 -0.11" rpy="0 -0 0"/>
+            <geometry>
+                <cylinder radius="0.005" length="0.17"/>
+            </geometry>
+        </collision>
+        <collision>
+            <origin xyz="-0.14 -0.21 -0.11" rpy="0 -0 0"/>
+            <geometry>
+                <cylinder radius="0.005" length="0.17"/>
             </geometry>
         </collision>
     </link>
@@ -251,7 +275,7 @@
             <geometry>
                 <mesh filename="package://ardupilot_gazebo/models/iris_with_standoffs/meshes/iris_prop_ccw.dae" scale="1 1 1"/>
             </geometry>
-            <material name="rotor_0rotor_0_visual">
+            <material name="rotor_0visual">
                 <texture/>
                 <color rgba="0 0 1.2 1.2"/>
             </material>
@@ -274,7 +298,7 @@
             <geometry>
                 <mesh filename="package://ardupilot_gazebo/models/iris_with_standoffs/meshes/iris_prop_ccw.dae" scale="1 1 1"/>
             </geometry>
-            <material name="rotor_1rotor_1_visual">
+            <material name="rotor_1visual">
                 <texture/>
                 <color rgba="0 0 1.2 1.2"/>
             </material>
@@ -297,7 +321,7 @@
             <geometry>
                 <mesh filename="package://ardupilot_gazebo/models/iris_with_standoffs/meshes/iris_prop_cw.dae" scale="1 1 1"/>
             </geometry>
-            <material name="rotor_2rotor_2_visual">
+            <material name="rotor_2visual">
                 <texture/>
                 <color rgba="0 1.2 0 1.2"/>
             </material>
@@ -320,7 +344,7 @@
             <geometry>
                 <mesh filename="package://ardupilot_gazebo/models/iris_with_standoffs/meshes/iris_prop_cw.dae" scale="1 1 1"/>
             </geometry>
-            <material name="rotor_3rotor_3_visual">
+            <material name="rotor_3visual">
                 <texture/>
                 <color rgba="0 1.2 0 1.2"/>
             </material>
