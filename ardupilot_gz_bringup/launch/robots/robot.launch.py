@@ -195,20 +195,20 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # ardupilot_sitl
     sitl_arguments = {
-      "command": command,
-      "wipe": "False",
-      "speedup": "1",
-      "slave": "0",
-      "instance": f"{instance}",
-      "sysid": f"{sysid}",
-      "model": LaunchConfiguration("model"),
-      "defaults": LaunchConfiguration("defaults"),
-      "synthetic_clock": LaunchConfiguration("synthetic_clock"),
-      "sim_address": sim_address,
-      "master": f"tcp:{sim_address}:{master_port}",
-      "sitl": f"{sim_address}:{sitl_port}",
-      "out": f"{sim_address}:{mavlink_out}",
-      "use_instance_dir": LaunchConfiguration("use_instance_dir"),
+        "command": command,
+        "wipe": "False",
+        "speedup": "1",
+        "slave": "0",
+        "instance": f"{instance}",
+        "sysid": f"{sysid}",
+        "model": LaunchConfiguration("model"),
+        "defaults": LaunchConfiguration("defaults"),
+        "synthetic_clock": LaunchConfiguration("synthetic_clock"),
+        "sim_address": sim_address,
+        "master": f"tcp:{sim_address}:{master_port}",
+        "sitl": f"{sim_address}:{sitl_port}",
+        "out": f"{sim_address}:{mavlink_out}",
+        "use_instance_dir": LaunchConfiguration("use_instance_dir"),
     }
 
     sitl = IncludeLaunchDescription(
@@ -224,16 +224,18 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             ]
         ),
         launch_arguments=sitl_arguments.items(),
-        condition=UnlessCondition(LaunchConfiguration("use_dds_agent"))
+        condition=UnlessCondition(LaunchConfiguration("use_dds_agent")),
     )
 
     # ardupilot_sitl + micro_ros_agent
     sitl_dds_arguments = sitl_arguments.copy()
-    sitl_dds_arguments.update({
-      "micro_ros_agent_ns": name,
-      "transport": "udp4",
-      "port": f"{dds_port}",
-    })
+    sitl_dds_arguments.update(
+        {
+            "micro_ros_agent_ns": name,
+            "transport": "udp4",
+            "port": f"{dds_port}",
+        }
+    )
 
     # Include component launch files.
     sitl_dds = IncludeLaunchDescription(
@@ -249,7 +251,7 @@ def launch_sitl_dds(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             ]
         ),
         launch_arguments=sitl_dds_arguments.items(),
-        condition=IfCondition(LaunchConfiguration("use_dds_agent"))
+        condition=IfCondition(LaunchConfiguration("use_dds_agent")),
     )
 
     return [sitl, sitl_dds]
