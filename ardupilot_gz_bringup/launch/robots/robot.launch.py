@@ -21,6 +21,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import (
     DeclareLaunchArgument,
+    ExecuteProcess,
     IncludeLaunchDescription,
     OpaqueFunction,
     RegisterEventHandler,
@@ -28,6 +29,7 @@ from launch.actions import (
 from launch.conditions import IfCondition
 from launch.conditions import UnlessCondition
 from launch.event_handlers import OnProcessStart
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -97,7 +99,26 @@ def launch_spawn_robot(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         ],
         output="screen",
     )
-    return [spawn_robot]
+
+    publish_spawn_done = Node(
+        package="ardupilot_gz_utils",
+        executable="send_bool",
+        namespace=namespace,
+        parameters=[{"topic": "spawn_done"}],
+        output="screen",
+    )
+
+    delayed_publish_spawn_done = RegisterEventHandler(
+        event_handler=OnProcessExit(
+            target_action=spawn_robot,
+            on_exit=[publish_spawn_done],
+        ),
+    )
+
+    return [
+        spawn_robot,
+        delayed_publish_spawn_done,
+    ]
 
 
 def launch_state_pub_with_bridge(
