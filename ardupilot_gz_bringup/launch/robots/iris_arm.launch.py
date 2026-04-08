@@ -92,13 +92,13 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
         pkg_project_description, "models", "iris_with_arm", "model.sdf"
     )
     with open(model_sdf_file, "r") as file:
-        model_sdf_doc =  ET.fromstring(file.read())
+        model_sdf_doc = ET.fromstring(file.read())
 
     arm_sdf_file = os.path.join(
         pkg_project_description, "models", "so_arm_100", "model.sdf"
     )
     with open(arm_sdf_file, "r") as file:
-        arm_sdf_doc =  ET.fromstring(file.read())
+        arm_sdf_doc = ET.fromstring(file.read())
 
     # add the ros2_control element back into the sdf
     arm_model = arm_sdf_doc.find("model")
@@ -205,7 +205,17 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
 
     namespace = LaunchConfiguration("namespace").perform(context)
     robot_name = LaunchConfiguration("robot_name").perform(context)
-    controller_manager_name = f"{namespace}/controller_manager"
+    if namespace:
+        controller_manager_name = f"/{namespace}/controller_manager"
+    else:
+        controller_manager_name = "/controller_manager"
+
+    print(f"dof:                      {dof}")
+    print(f"prefix:                   {prefix}")
+    print(f"world_name:               {world_name}")
+    print(f"namespace:                {namespace}")
+    print(f"robot_name:               {robot_name}")
+    print(f"controller_manager_name:   {controller_manager_name}")
 
     # ros2_control configuration (as not using gz_ros2_control)
     ros2_control_file = os.path.join(
@@ -217,7 +227,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     print(f"ros2_control_file: {ros2_control_file}")
 
     # controller manager (if not using gz_ros2_control)
-    ros2_control_node = Node(
+    controller_manager = Node(
         condition=IfCondition(LaunchConfiguration("use_topic_hardware_interface")),
         package="controller_manager",
         executable="ros2_control_node",
@@ -226,12 +236,15 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
             ros2_control_file,
             {"use_sim_time": True},
         ],
+        remappings=[
+            ("/robot_description", "robot_description"),
+        ],
     )
 
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        namespace=namespace,
+        # namespace=namespace,
         arguments=[
             "joint_state_broadcaster",
             "--controller-manager",
@@ -243,7 +256,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     arm_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        namespace=namespace,
+        # namespace=namespace,
         arguments=[
             "arm_controller",
             "--controller-manager",
@@ -256,7 +269,7 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     gripper_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        namespace=namespace,
+        # namespace=namespace,
         arguments=[
             "gripper_controller",
             "--controller-manager",
@@ -313,18 +326,18 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     ]
 
     if use_topic:
-        # Topic-based control: start ros2_control_node,
+        # Topic-based control: start controller_manager,
         # then spawn controllers after it starts
         nodes += [
             RegisterEventHandler(
                 event_handler=OnProcessStart(
                     target_action=wait_spawn_done,
-                    on_start=[ros2_control_node],
+                    on_start=[controller_manager],
                 )
             ),
             RegisterEventHandler(
                 event_handler=OnProcessStart(
-                    target_action=ros2_control_node,
+                    target_action=controller_manager,
                     on_start=[joint_state_broadcaster_spawner],
                 )
             ),
