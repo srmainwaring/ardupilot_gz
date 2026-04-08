@@ -22,8 +22,7 @@
       name="gz::sim::systems::JointStatePublisher">
     </plugin>
 
-    <plugin
-      filename="gz-sim-odometry-publisher-system"
+    <plugin filename="gz-sim-odometry-publisher-system"
       name="gz::sim::systems::OdometryPublisher">
       <odom_frame>odom</odom_frame>
       <robot_base_frame>base_link</robot_base_frame>
@@ -187,7 +186,7 @@
       <joint_name>rotor_3_joint</joint_name>
     </plugin>
 
-    <plugin filename="gz-sim-linearbatteryplugin-system"
+    <!-- <plugin filename="gz-sim-linearbatteryplugin-system"
       name="gz::sim::systems::LinearBatteryPlugin">
       <battery_name>lipo_3500mAh</battery_name>
       <fix_issue_225>true</fix_issue_225>
@@ -198,7 +197,7 @@
       <initial_charge>3.5</initial_charge>
       <power_load>200.0</power_load>
       <start_draining>false</start_draining>
-    </plugin>
+    </plugin> -->
 
     <plugin name="ArduPilotPlugin"
       filename="ArduPilotPlugin">
