@@ -115,7 +115,7 @@ def generate_sdf_model():
 
     # write the completed sdf file
     with open(sdf_file, "w") as file:
-        file.write(str(model_sdf))
+        file.write(str(model_sdf) + "\n")
 
 
 def main(args=None):
