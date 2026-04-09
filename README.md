@@ -152,10 +152,19 @@ ros2 launch ardupilot_gz_bringup multiagent.launch.py rviz:=true use_gz_tf:=true
 
 ### 5. Iris with 6DOF arm
 
-This simulation has an iris copter equipped with a Hiwonder 6DOF LeArm and cameras in a runway world. Arm reference: [hiwonder learm_ros2](https://github.com/andrewda/learm_ros2).
+This simulation has an iris copter equipped with a SO-ARM100 in a runway world. Arm reference: [SO-ARM100](https://github.com/brukg/SO-100-arm).
+
+
+Launch the copter + arm in Gazebo
 
 ```bash
-ros2 launch ardupilot_gz_bringup iris_arm_runway.launch.py rviz:=true use_gz_tf:=true
+ros2 launch ardupilot_gz_bringup iris_arm_runway.launch.py use_gz_tf:=true rviz:=false prefix:="arm_" dof:="5" use_topic_hardware_interface:=true
+```
+
+Launch MoveIt
+
+```bash
+ros2 launch ardupilot_gz_iris_arm_moveit_config moveit.launch.py use_fake_hardware:=false use_sim_time:=true rviz:=true
 ```
 
 ## Notes
