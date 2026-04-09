@@ -423,7 +423,7 @@
       <i_min>-1</i_min>
       <cmd_max>100.0</cmd_max>
       <cmd_min>-100.0</cmd_min>
-      <initial_position>1.6</initial_position>
+      <initial_position>1.45</initial_position>
     </plugin>
     <plugin name="gz::sim::systems::JointPositionController" filename="gz-sim-joint-position-controller-system">
       <joint_name>arm_Wrist_Pitch</joint_name>
@@ -500,7 +500,7 @@
         <command_interface name="position">
           <param name="min">-3.14</param>
           <param name="max">3.14</param>
-          <param name="initial_value">1.6</param>
+          <param name="initial_value">1.45</param>
         </command_interface>
         <state_interface name="position" />
         <state_interface name="velocity" />
