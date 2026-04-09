@@ -280,9 +280,9 @@ def generate_robot_launch_actions(context: LaunchContext, *args, **kwargs):
     )
 
     bridge_template_file = os.path.join(
-        so_arm_100_bringup_path,
+        pkg_project_bringup,
         "config",
-        "ros_gz_bridge.yaml",
+        "so_arm_100_bridge.yaml",
     )
 
     # Generate bridge config from template
