@@ -13,7 +13,7 @@
                 </geometry>
                 <material name="arm_Fixed_Gripperarm_Fixed_Gripper_visual">
                     <texture />
-                    <color rgba="1.2 1.2 0.00588235 1.2" />
+                    <color rgba="1 1 0.00588235 1" />
                 </material>
             </visual>
             <visual>
@@ -23,7 +23,7 @@
                 </geometry>
                 <material name="arm_Fixed_Gripperarm_Fixed_Gripper_fixed_joint_lump__arm_End_Effector_visual_1">
                     <texture />
-                    <color rgba="1.2 0 0 1.2" />
+                    <color rgba="1 0 0 1" />
                 </material>
             </visual>
             <collision>
@@ -46,7 +46,7 @@
                 </geometry>
                 <material name="arm_Lower_Armarm_Lower_Arm_visual">
                     <texture />
-                    <color rgba="1.2 1.2 0.00588235 1.2" />
+                    <color rgba="1 1 0.00588235 1" />
                 </material>
             </visual>
             <collision>
@@ -69,7 +69,7 @@
                 </geometry>
                 <material name="arm_Moving_Jawarm_Moving_Jaw_visual">
                     <texture />
-                    <color rgba="1.2 1.2 0.00588235 1.2" />
+                    <color rgba="1 1 0.00588235 1" />
                 </material>
             </visual>
             <collision>
@@ -92,7 +92,7 @@
                 </geometry>
                 <material name="arm_Shoulder_Rotation_Pitcharm_Shoulder_Rotation_Pitch_visual">
                     <texture />
-                    <color rgba="1.2 1.2 0.00588235 1.2" />
+                    <color rgba="1 1 0.00588235 1" />
                 </material>
             </visual>
             <collision>
@@ -115,7 +115,7 @@
                 </geometry>
                 <material name="arm_Upper_Armarm_Upper_Arm_visual">
                     <texture />
-                    <color rgba="1.2 1.2 0.00588235 1.2" />
+                    <color rgba="1 1 0.00588235 1" />
                 </material>
             </visual>
             <collision>
@@ -138,7 +138,7 @@
                 </geometry>
                 <material name="arm_Wrist_Pitch_Rollarm_Wrist_Pitch_Roll_visual">
                     <texture />
-                    <color rgba="1.2 1.2 0.00588235 1.2" />
+                    <color rgba="1 1 0.00588235 1" />
                 </material>
             </visual>
             <collision>
@@ -161,7 +161,7 @@
                 </geometry>
                 <material name="arm_base_linkarm_base_link_fixed_joint_lump__arm_Base_visual">
                     <texture />
-                    <color rgba="1.2 1.2 0.00588235 1.2" />
+                    <color rgba="1 1 0.00588235 1" />
                 </material>
             </visual>
             <collision>
@@ -184,7 +184,7 @@
                 </geometry>
                 <material name="base_linkbase_visual">
                     <texture />
-                    <color rgba="0.06 0.06 0.06 1.2" />
+                    <color rgba="0.06 0.06 0.06 1" />
                 </material>
             </visual>
             <visual>
@@ -194,7 +194,7 @@
                 </geometry>
                 <material name="base_linkfront_left_leg_visual">
                     <texture />
-                    <color rgba="0.06 0.06 0.06 1.2" />
+                    <color rgba="0.06 0.06 0.06 1" />
                 </material>
             </visual>
             <visual>
@@ -204,7 +204,7 @@
                 </geometry>
                 <material name="base_linkfront_right_leg_visual">
                     <texture />
-                    <color rgba="0.06 0.06 0.06 1.2" />
+                    <color rgba="0.06 0.06 0.06 1" />
                 </material>
             </visual>
             <visual>
@@ -214,7 +214,7 @@
                 </geometry>
                 <material name="base_linkrear_left_leg_visual">
                     <texture />
-                    <color rgba="0.06 0.06 0.06 1.2" />
+                    <color rgba="0.06 0.06 0.06 1" />
                 </material>
             </visual>
             <visual>
@@ -224,7 +224,7 @@
                 </geometry>
                 <material name="base_linkrear_right_leg_visual">
                     <texture />
-                    <color rgba="0.06 0.06 0.06 1.2" />
+                    <color rgba="0.06 0.06 0.06 1" />
                 </material>
             </visual>
             <collision>
@@ -278,7 +278,7 @@
                 </geometry>
                 <material name="rotor_0visual">
                     <texture />
-                    <color rgba="0 0 1.2 1.2" />
+                    <color rgba="0 0 1 1" />
                 </material>
             </visual>
             <collision>
@@ -301,7 +301,7 @@
                 </geometry>
                 <material name="rotor_1visual">
                     <texture />
-                    <color rgba="0 0 1.2 1.2" />
+                    <color rgba="0 0 1 1" />
                 </material>
             </visual>
             <collision>
@@ -324,7 +324,7 @@
                 </geometry>
                 <material name="rotor_2visual">
                     <texture />
-                    <color rgba="0 1.2 0 1.2" />
+                    <color rgba="0 1 0 1" />
                 </material>
             </visual>
             <collision>
@@ -347,7 +347,7 @@
                 </geometry>
                 <material name="rotor_3visual">
                     <texture />
-                    <color rgba="0 1.2 0 1.2" />
+                    <color rgba="0 1 0 1" />
                 </material>
             </visual>
             <collision>
