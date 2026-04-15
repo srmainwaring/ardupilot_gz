@@ -18,6 +18,11 @@ from moveit_msgs.msg import MoveItErrorCodes
 from moveit_msgs.msg import OrientationConstraint
 from moveit_msgs.msg import PlanningOptions
 from moveit_msgs.msg import PositionConstraint
+from moveit_msgs.msg import PositionIKRequest
+from moveit_msgs.msg import RobotState
+from moveit_msgs.srv import GetPositionIK
+
+from sensor_msgs.msg import JointState
 
 from shape_msgs.msg import SolidPrimitive
 
@@ -27,6 +32,46 @@ from shape_msgs.msg import SolidPrimitive
 from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
+
+
+def pose_stamped_to_position_ik_request(
+    pose_stamped,
+    eef_link,
+    group_name,
+):
+    # TODO: obtain joint state using query or SRDF
+    robot_state = RobotState()
+    robot_state.joint_state = JointState()
+    robot_state.joint_state.name = [
+        "Shoulder_Rotation",
+        "Shoulder_Pitch",
+        "Elbow",
+        "Wrist_Pitch",
+        "Wrist_Roll",
+    ]
+    robot_state.joint_state.position = [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+    ]
+
+    ik_request = PositionIKRequest()
+    ik_request.group_name = group_name
+    ik_request.robot_state = robot_state
+    # no constraints
+    # ik_request.constraints
+    ik_request.avoid_collisions = True
+    ik_request.ik_link_name = eef_link
+    ik_request.pose_stamped = pose_stamped
+    # default planning time
+    # ik_request.timeout = self.planning_time
+
+    req = GetPositionIK.Request()
+    req.ik_request = ik_request
+
+    return req
 
 
 def pose_stamped_to_move_group_goal(
@@ -103,6 +148,78 @@ def pose_stamped_to_move_group_goal(
     return g
 
 
+def moveit_error_code_to_string(val):
+    # overall behavior
+    if val == MoveItErrorCodes.SUCCESS:
+        return "SUCCESS"
+    elif val == MoveItErrorCodes.FAILURE:
+        return "FAILURE"
+    elif val == MoveItErrorCodes.PLANNING_FAILED:
+        return "PLANNING_FAILED"
+    elif val == MoveItErrorCodes.INVALID_MOTION_PLAN:
+        return "INVALID_MOTION_PLAN"
+    elif val == MoveItErrorCodes.MOTION_PLAN_INVALIDATED_BY_ENVIRONMENT_CHANGE:
+        return "MOTION_PLAN_INVALIDATED_BY_ENVIRONMENT_CHANGE"
+    elif val == MoveItErrorCodes.CONTROL_FAILED:
+        return "CONTROL_FAILED"
+    elif val == MoveItErrorCodes.UNABLE_TO_AQUIRE_SENSOR_DATA:
+        return "UNABLE_TO_AQUIRE_SENSOR_DATA"
+    elif val == MoveItErrorCodes.TIMED_OUT:
+        return "TIMED_OUT"
+    elif val == MoveItErrorCodes.PREEMPTED:
+        return "PREEMPTED"
+
+    # planning & kinematics request errors
+    elif val == MoveItErrorCodes.START_STATE_IN_COLLISION:
+        return "START_STATE_IN_COLLISION"
+    elif val == MoveItErrorCodes.START_STATE_VIOLATES_PATH_CONSTRAINTS:
+        return "START_STATE_VIOLATES_PATH_CONSTRAINTS"
+    elif val == MoveItErrorCodes.START_STATE_INVALID:
+        return "START_STATE_INVALID"
+    elif val == MoveItErrorCodes.GOAL_IN_COLLISION:
+        return "GOAL_IN_COLLISION"
+    elif val == MoveItErrorCodes.GOAL_VIOLATES_PATH_CONSTRAINTS:
+        return "GOAL_VIOLATES_PATH_CONSTRAINTS"
+    elif val == MoveItErrorCodes.GOAL_CONSTRAINTS_VIOLATED:
+        return "GOAL_CONSTRAINTS_VIOLATED"
+    elif val == MoveItErrorCodes.GOAL_STATE_INVALID:
+        return "GOAL_STATE_INVALID"
+    elif val == MoveItErrorCodes.UNRECOGNIZED_GOAL_TYPE:
+        return "UNRECOGNIZED_GOAL_TYPE"
+    elif val == MoveItErrorCodes.INVALID_GROUP_NAME:
+        return "INVALID_GROUP_NAME"
+    elif val == MoveItErrorCodes.INVALID_GOAL_CONSTRAINTS:
+        return "INVALID_GOAL_CONSTRAINTS"
+    elif val == MoveItErrorCodes.INVALID_ROBOT_STATE:
+        return "INVALID_ROBOT_STATE"
+    elif val == MoveItErrorCodes.INVALID_LINK_NAME:
+        return "INVALID_LINK_NAME"
+    elif val == MoveItErrorCodes.INVALID_OBJECT_NAME:
+        return "INVALID_OBJECT_NAME"
+
+    # system errors
+    elif val == MoveItErrorCodes.FRAME_TRANSFORM_FAILURE:
+        return "FRAME_TRANSFORM_FAILURE"
+    elif val == MoveItErrorCodes.COLLISION_CHECKING_UNAVAILABLE:
+        return "COLLISION_CHECKING_UNAVAILABLE"
+    elif val == MoveItErrorCodes.ROBOT_STATE_STALE:
+        return "ROBOT_STATE_STALE"
+    elif val == MoveItErrorCodes.SENSOR_INFO_STALE:
+        return "SENSOR_INFO_STALE"
+    elif val == MoveItErrorCodes.COMMUNICATION_FAILURE:
+        return "COMMUNICATION_FAILURE"
+    elif val == MoveItErrorCodes.CRASH:
+        return "CRASH"
+    elif val == MoveItErrorCodes.ABORT:
+        return "ABORT"
+
+    # kinematic errors
+    elif val == MoveItErrorCodes.NO_IK_SOLUTION:
+        return "NO_IK_SOLUTION"
+    else:
+        return "UNKNOWN"
+
+
 class MoveToGoal(Node):
     def __init__(self):
         super().__init__("move_to_goal")
@@ -140,13 +257,16 @@ class MoveToGoal(Node):
         # moveit_msgs/srv/GetStateValidity
         self.check_state_validity_name = "/check_state_validity"
         # moveit_msgs/srv/GetPositionFK
-        self.comput_fk_name = "/compute_fk"
+        self.compute_fk_name = "/compute_fk"
         # moveit_msgs/srv/GetPositionIK
-        self.comput_ik_name = "/compute_ik"
+        self.compute_ik_name = "/compute_ik"
         # moveit_msgs/srv/GetMotionPlan
         self.plan_kinematic_path = "/plan_kinematic_path"
         # moveit_msgs/srv/GetMotionSequence
         self.plan_sequence_path = "/plan_sequence_path"
+
+        # service clients
+        self.compute_ik_client = self.create_client(GetPositionIK, self.compute_ik_name)
 
         # move_group action servers
         # moveit_msgs/action/MoveGroup
@@ -159,19 +279,56 @@ class MoveToGoal(Node):
         pose.position.x = 0.169
         pose.position.y = -0.1957
         pose.position.z = 0.0873
-        pose.orientation.w = 0.0201
-        pose.orientation.x = 0.1072
-        pose.orientation.y = 0.7648
-        pose.orientation.z = 0.6349
+        # pose.orientation.w = 0.0201
+        # pose.orientation.x = 0.1072
+        # pose.orientation.y = 0.7648
+        # pose.orientation.z = 0.6349
+        pose.orientation.w = 1.0
+        pose.orientation.x = 0.0
+        pose.orientation.y = 0.0
+        pose.orientation.z = 0.0
 
         self.pose_target_callback(pose)
-
 
     def pose_target_callback(self, msg: Pose):
         with self.pose_target_mutex:
             self.pose_target = deepcopy(msg)
 
-        self.send_goal(self.pose_target)
+        self.send_compute_ik_request(self.pose_target)
+        # self.send_goal(self.pose_target)
+
+    def send_compute_ik_request(self, pose_target):
+        ps = PoseStamped()
+        ps.header.frame_id = self.base_frame
+        ps.header.stamp = self.get_clock().now().to_msg()
+        ps.pose = pose_target
+
+        req = pose_stamped_to_position_ik_request(
+            ps,
+            eef_link=self.eef_link,
+            group_name=self.planning_group,
+        )
+
+        # TODO: give feedback?
+        # while not self.compute_ik_client.wait_for_service(timeout_sec=1.0):
+        #     self.get_logger().info(f"Waiting for service {self.compute_ik_name}...")
+        self.compute_ik_client.wait_for_service()
+        self.compute_ik_future = self.compute_ik_client.call_async(req)
+        self.compute_ik_future.add_done_callback(self.compute_ik_result_callback)
+
+    def compute_ik_result_callback(self, future):
+        self.get_logger().info("Compute IK result")
+        result = future.result()
+        if result.error_code.val != MoveItErrorCodes.SUCCESS:
+            error_str = moveit_error_code_to_string(result.error_code.val)
+            self.get_logger().info(f"Failed to compute IK: {error_str}")
+        else:
+            # result.solution is a RobotState
+            robot_state = result.solution
+            joint_state = robot_state.joint_state
+            self.get_logger().info(f"frame_id: {joint_state.header.frame_id}")
+            for name, position in zip(joint_state.name, joint_state.position):
+                self.get_logger().info(f"{name}: {position}")
 
     def send_goal(self, pose_target):
         ps = PoseStamped()
@@ -184,9 +341,10 @@ class MoveToGoal(Node):
             ps,
             eef_link=self.eef_link,
             group_name=self.planning_group,
-            position_tolerance_m=0.02,
-            orient_tolerance_rad=0.04,
-            plan_only=False)
+            position_tolerance_m=0.1,
+            orient_tolerance_rad=0.1,
+            plan_only=False,
+        )
 
         self.action_client.wait_for_server()
         self.send_goal_future = self.action_client.send_goal_async(goal_msg)
@@ -206,7 +364,8 @@ class MoveToGoal(Node):
     def get_result_callback(self, future):
         result = future.result().result
         if result.error_code.val != MoveItErrorCodes.SUCCESS:
-            self.get_logger().info(f"Failed to move arm")
+            error_str = moveit_error_code_to_string(result.error_code.val)
+            self.get_logger().info(f"Failed to move arm: {error_str}")
         else:
             self.get_logger().info(f"Arm moved to pose target")
 
