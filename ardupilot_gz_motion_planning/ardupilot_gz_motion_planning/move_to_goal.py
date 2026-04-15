@@ -7,6 +7,10 @@ import rclpy
 from copy import deepcopy
 from threading import Lock
 
+from builtin_interfaces.msg import Duration
+
+from control_msgs.action import FollowJointTrajectory
+
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Vector3
@@ -26,12 +30,52 @@ from sensor_msgs.msg import JointState
 
 from shape_msgs.msg import SolidPrimitive
 
-# no support for ros2
-# import moveit_commander
+from trajectory_msgs.msg import JointTrajectory
+from trajectory_msgs.msg import JointTrajectoryPoint
 
 from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
+
+
+def follow_joint_traj_error_code_to_string(val):
+    result = FollowJointTrajectory.Result()
+    if val == result.SUCCESSFUL:
+        return "SUCCESSFUL"
+    elif val == result.INVALID_GOAL:
+        return "INVALID_GOAL"
+    elif val == result.INVALID_JOINTS:
+        return "INVALID_JOINTS"
+    elif val == result.OLD_HEADER_TIMESTAMP:
+        return "OLD_HEADER_TIMESTAMP"
+    elif val == result.PATH_TOLERANCE_VIOLATED:
+        return "PATH_TOLERANCE_VIOLATED"
+    elif val == result.GOAL_TOLERANCE_VIOLATED:
+        return "GOAL_TOLERANCE_VIOLATED"
+    else:
+        return "UNKNOWN"
+
+
+def joint_state_to_follow_joint_traj_goal(
+    joint_state,
+):
+    jtp = JointTrajectoryPoint()
+    jtp.positions = joint_state.position
+    jtp.velocities = [0.0 for x in joint_state.position]
+    jtp.time_from_start.sec = 2
+    jtp.time_from_start.nanosec = 0
+
+    jt = JointTrajectory()
+    # jt.header = joint_state.header
+    jt.joint_names = joint_state.name
+    jt.points.append(jtp)
+
+    g = FollowJointTrajectory.Goal()
+    g.trajectory = jt
+
+    print(f"{g.trajectory}")
+
+    return g
 
 
 def pose_stamped_to_position_ik_request(
@@ -270,10 +314,14 @@ class MoveToGoal(Node):
 
         # move_group action servers
         # moveit_msgs/action/MoveGroup
-        self.action_name = "/move_action"
+        self.move_action_name = "/move_action"
+        self.follow_joint_traj_action_name = "/arm_controller/follow_joint_trajectory"
 
         # action clients
-        self.action_client = ActionClient(self, MoveGroup, self.action_name)
+        self.move_action_client = ActionClient(self, MoveGroup, self.move_action_name)
+        self.follow_joint_traj_action_client = ActionClient(
+            self, FollowJointTrajectory, self.follow_joint_traj_action_name
+        )
 
         pose = Pose()
         pose.position.x = 0.169
@@ -295,7 +343,6 @@ class MoveToGoal(Node):
             self.pose_target = deepcopy(msg)
 
         self.send_compute_ik_request(self.pose_target)
-        # self.send_goal(self.pose_target)
 
     def send_compute_ik_request(self, pose_target):
         ps = PoseStamped()
@@ -330,7 +377,64 @@ class MoveToGoal(Node):
             for name, position in zip(joint_state.name, joint_state.position):
                 self.get_logger().info(f"{name}: {position}")
 
-    def send_goal(self, pose_target):
+            # move arm if successful using /arm_controller/follow_joint_trajectory
+            js = JointState()
+            js.header.frame_id = joint_state.header.frame_id
+            js.header.stamp = self.get_clock().now().to_msg()
+            js.name = joint_state.name[0:-1]
+            js.position = joint_state.position[0:-1]
+            self.follow_joint_traj_send_goal(js)
+
+            # TODO: alternatively, use the /move_action
+            # self.move_action_send_goal(self.pose_target)
+
+
+        self.get_logger().info("Compute IK done")
+        self.get_logger().info("Waiting for input...")
+
+    def follow_joint_traj_send_goal(self, joint_state):
+        self.get_logger().info("FollowJointTrajectory send goal")
+        goal_msg = joint_state_to_follow_joint_traj_goal(joint_state)
+
+        self.follow_joint_traj_action_client.wait_for_server()
+        self.follow_joint_traj_send_goal_future = (
+            self.follow_joint_traj_action_client.send_goal_async(
+                goal_msg,
+                feedback_callback=self.follow_joint_traj_feedback_callback,
+            )
+        )
+        self.follow_joint_traj_send_goal_future.add_done_callback(
+            self.follow_joint_traj_action_goal_response_callback
+        )
+
+    def follow_joint_traj_action_goal_response_callback(self, future):
+        self.get_logger().info("FollowJointTrajectory goal response")
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().info("FollowJointTrajectory goal rejected")
+            return
+
+        self.get_logger().info("FollowJointTrajectory goal accepted")
+        self.follow_joint_traj_result_future = goal_handle.get_result_async()
+        self.follow_joint_traj_result_future.add_done_callback(
+            self.follow_joint_traj_result_callback
+        )
+
+    def follow_joint_traj_result_callback(self, future):
+        self.get_logger().info("FollowJointTrajectory goal result")
+        result = future.result().result
+        if result.error_code != result.SUCCESSFUL:
+            error_str = follow_joint_traj_error_code_to_string(result.error_code)
+            self.get_logger().info(f"Failed to move arm: {error_str}: {result.error_string}")
+        else:
+            self.get_logger().info(f"Arm moved to pose target")
+        # self.get_logger().info(f"Result: {result}")
+
+    def follow_joint_traj_feedback_callback(self, feedback_msg):
+        feedback = feedback_msg.feedback
+        # self.get_logger().info(f"FollowJointTrajectory feedback: {feedback}")
+
+    def move_action_send_goal(self, pose_target):
         ps = PoseStamped()
         ps.header.frame_id = self.base_frame
         ps.header.stamp = self.get_clock().now().to_msg()
@@ -346,22 +450,29 @@ class MoveToGoal(Node):
             plan_only=False,
         )
 
-        self.action_client.wait_for_server()
-        self.send_goal_future = self.action_client.send_goal_async(goal_msg)
-        self.send_goal_future.add_done_callback(self.goal_response_callback)
+        self.move_action_client.wait_for_server()
+        self.move_action_send_goal_future = self.move_action_client.send_goal_async(
+            goal_msg,
+            feedback_callback=move_action_feedback_callback,
+        )
+        self.move_action_send_goal_future.add_done_callback(
+            self.move_action_goal_response_callback
+        )
 
-    def goal_response_callback(self, future):
-        self.get_logger().info("Goal response")
+    def move_action_goal_response_callback(self, future):
+        self.get_logger().info("MoveGroup goal response")
         goal_handle = future.result()
         if not goal_handle.accepted:
-            self.get_logger().info("Goal rejected")
+            self.get_logger().info("MoveGroup goal rejected")
             return
 
-        self.get_logger().info("Goal accepted")
-        self.get_result_future = goal_handle.get_result_async()
-        self.get_result_future.add_done_callback(self.get_result_callback)
+        self.get_logger().info("MoveGroup goal accepted")
+        self.move_action_get_result_future = goal_handle.get_result_async()
+        self.move_action_get_result_future.add_done_callback(
+            self.move_action_result_callback
+        )
 
-    def get_result_callback(self, future):
+    def move_action_result_callback(self, future):
         result = future.result().result
         if result.error_code.val != MoveItErrorCodes.SUCCESS:
             error_str = moveit_error_code_to_string(result.error_code.val)
@@ -370,6 +481,10 @@ class MoveToGoal(Node):
             self.get_logger().info(f"Arm moved to pose target")
 
         self.get_logger().info(f"Result: {result}")
+
+    def move_action_feedback_callback(self, feedback_msg):
+        feedback = feedback_msg.feedback
+        self.get_logger().info(f"MoveGroup feedback: {feedback}")
 
 
 def main(args=None):
