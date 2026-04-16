@@ -1,12 +1,5 @@
 """
 Motion planning for the iris_with_arm
-
-Usage
-
-Start robot node
-
-Start moveit nodes
-
 """
 
 import rclpy
@@ -21,7 +14,7 @@ from rclpy.logging import get_logger
 
 
 def plan_and_execute(
-    robot,
+    node,
     planning_component,
     logger,
     single_plan_parameters=None,
@@ -46,7 +39,7 @@ def plan_and_execute(
     if plan_result:
         logger.info("Executing plan")
         robot_trajectory = plan_result.trajectory
-        robot.execute(robot_trajectory, controllers=[])
+        node.execute(robot_trajectory, controllers=[])
     else:
         logger.error("Planning failed")
 
@@ -59,55 +52,68 @@ def main(args=None):
     ###########################################################################
 
     rclpy.init(args=args)
-    logger = get_logger("moveit_py.pose_goal")
+    logger = get_logger("motion_planning")
 
     # instantiate MoveItPy instance and get planning component
-    robot = MoveItPy(node_name="moveit_py")
+    node = MoveItPy(node_name="moveit_py")
     logger.info("MoveItPy instance created")
 
-    robot_arm = robot.get_planning_component("arm")
-    logger.info("MoveItPy get 'arm' planning component")
+    arm = node.get_planning_component("arm")
+    logger.info("MoveItPy get 'arm' planning component\n")
 
     ###########################################################################
     # Plan 1 - set states with predefined string
     ###########################################################################
 
+    logger.info("MoveItPy start Plan 1")
+
+    # NOTE: no need to set start state, and if it is set it must be close
     # set plan start state using predefined state
-    robot_arm.set_start_state(configuration_name="ready")
+    # arm.set_start_state(configuration_name="init")
 
     # set pose goal using predefined state
-    robot_arm.set_goal_state(configuration_name="extended")
+    arm.set_goal_state(configuration_name="init")
 
     # plan to goal
-    plan_and_execute(robot, robot_arm, logger, sleep_time=3.0)
+    plan_and_execute(node, arm, logger, sleep_time=3.0)
+
+    logger.info("MoveItPy Plan 1 done\n\n")
+    time.sleep(1.0)
 
     ###########################################################################
     # Plan 2 - set goal state with RobotState object
     ###########################################################################
 
+    logger.info("MoveItPy start Plan 2")
+
     # instantiate a RobotState instance using the current robot model
-    robot_model = robot.get_robot_model()
+    robot_model = node.get_robot_model()
     robot_state = RobotState(robot_model)
 
     # randomize the robot state
     robot_state.set_to_random_positions()
 
     # set plan start state to current state
-    robot_arm.set_start_state_to_current_state()
+    arm.set_start_state_to_current_state()
 
     # set goal state to the initialized robot state
     logger.info("Set goal state to the initialized robot state")
-    robot_arm.set_goal_state(robot_state=robot_state)
+    arm.set_goal_state(robot_state=robot_state)
 
     # plan to goal
-    plan_and_execute(robot, robot_arm, logger, sleep_time=3.0)
+    plan_and_execute(node, arm, logger, sleep_time=3.0)
+
+    logger.info("MoveItPy Plan 2 done\n\n")
+    time.sleep(1.0)
 
     ###########################################################################
     # Plan 3 - set goal state with PoseStamped message
     ###########################################################################
 
+    logger.info("MoveItPy start Plan 3")
+
     # set plan start state to current state
-    robot_arm.set_start_state_to_current_state()
+    arm.set_start_state_to_current_state()
 
     # set pose goal with PoseStamped message
 
@@ -117,17 +123,22 @@ def main(args=None):
     pose_goal.pose.position.x = 0.28
     pose_goal.pose.position.y = -0.2
     pose_goal.pose.position.z = 0.5
-    robot_arm.set_goal_state(pose_stamped_msg=pose_goal, pose_link="Fixed_Gripper")
+    arm.set_goal_state(pose_stamped_msg=pose_goal, pose_link="End_Effector")
 
     # plan to goal
-    plan_and_execute(robot, robot_arm, logger, sleep_time=3.0)
+    plan_and_execute(node, arm, logger, sleep_time=3.0)
+
+    logger.info("MoveItPy Plan 3 done\n\n")
+    time.sleep(1.0)
 
     ###########################################################################
     # Plan 4 - set goal state with constraints
     ###########################################################################
 
+    logger.info("MoveItPy start Plan 4")
+
     # set plan start state to current state
-    robot_arm.set_start_state_to_current_state()
+    arm.set_start_state_to_current_state()
 
     # set constraints message
 
@@ -141,37 +152,48 @@ def main(args=None):
     robot_state.joint_positions = joint_values
     joint_constraint = construct_joint_constraint(
         robot_state=robot_state,
-        joint_model_group=robot.get_robot_model().get_joint_model_group("arm"),
+        joint_model_group=node.get_robot_model().get_joint_model_group("arm"),
     )
-    robot_arm.set_goal_state(motion_plan_constraints=[joint_constraint])
+    arm.set_goal_state(motion_plan_constraints=[joint_constraint])
 
     # plan to goal
-    plan_and_execute(robot, robot_arm, logger, sleep_time=3.0)
+    plan_and_execute(node, arm, logger, sleep_time=3.0)
+
+    logger.info("MoveItPy Plan 4 done\n\n")
+    time.sleep(1.0)
 
     ###########################################################################
     # Plan 5 - Planning with Multiple Pipelines simultaneously
     ###########################################################################
 
     # set plan start state to current state
-    robot_arm.set_start_state_to_current_state()
+    arm.set_start_state_to_current_state()
 
     # set pose goal with PoseStamped message
-    robot_arm.set_goal_state(configuration_name="ready")
+    arm.set_goal_state(configuration_name="init")
 
+    # TODO: only have one planner configured
     # initialise multi-pipeline plan request parameters
+    # multi_pipeline_plan_request_params = MultiPipelinePlanRequestParameters(
+    #     node, ["ompl_rrtc", "pilz_lin", "chomp_planner"]
+    # )
     multi_pipeline_plan_request_params = MultiPipelinePlanRequestParameters(
-        robot, ["ompl_rrtc", "pilz_lin", "chomp_planner"]
+        node, ["ompl_rrtc"]
     )
 
     # plan to goal
     plan_and_execute(
-        robot,
-        robot_arm,
+        node,
+        arm,
         logger,
         multi_plan_parameters=multi_pipeline_plan_request_params,
         sleep_time=3.0,
     )
 
+    logger.info("MoveItPy Plan 5 done, shutting down...\n\n")
+    time.sleep(1.0)
+
+    rclpy.shutdown()
 
 if __name__ == "__main__":
     main()
