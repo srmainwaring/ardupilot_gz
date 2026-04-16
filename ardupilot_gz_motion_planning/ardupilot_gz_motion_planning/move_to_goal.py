@@ -39,6 +39,7 @@ from rclpy.node import Node
 
 
 def follow_joint_traj_error_code_to_string(val):
+    """Convert a FollowJointTrajectory error code to a string"""
     result = FollowJointTrajectory.Result()
     if val == result.SUCCESSFUL:
         return "SUCCESSFUL"
@@ -59,6 +60,7 @@ def follow_joint_traj_error_code_to_string(val):
 def joint_state_to_follow_joint_traj_goal(
     joint_state,
 ):
+    """Create a FollowJointTrajectory.Goal from a JointState"""
     jtp = JointTrajectoryPoint()
     jtp.positions = joint_state.position
     jtp.velocities = [0.0 for x in joint_state.position]
@@ -83,6 +85,7 @@ def pose_stamped_to_position_ik_request(
     eef_link,
     group_name,
 ):
+    """Create a GetPositionIK.Request from a PoseStamped"""
     # TODO: obtain joint state using query or SRDF
     robot_state = RobotState()
     robot_state.joint_state = JointState()
@@ -104,14 +107,37 @@ def pose_stamped_to_position_ik_request(
     ik_request = PositionIKRequest()
     ik_request.group_name = group_name
     ik_request.robot_state = robot_state
-    # no constraints
-    # ik_request.constraints
     ik_request.avoid_collisions = True
     ik_request.ik_link_name = eef_link
     ik_request.pose_stamped = pose_stamped
     # default planning time
     # ik_request.timeout = self.planning_time
 
+    # Constraints
+    joint_constraints = []
+    joint_constraint = JointConstraint()
+    joint_constraints.append(joint_constraint)
+
+    position_constraints = []
+    position_constraint = PositionConstraint()
+    position_constraints.append(position_constraint)
+
+    orientation_constraints = []
+    orientation_constraint = OrientationConstraint()
+    orientation_constraints.append(orientation_constraint)
+
+    visibility_constraints = []
+    visibility_constraint = VisibilityConstraint()
+    visibility_constraints.append(visibility_constraint)
+
+    constraints = Constraints()
+    constraints.joint_constraints = joint_constraints
+    constraints.position_constraints = position_constraints
+    constraints.orientation_constraints = orientation_constraints
+    constraints.visibility_constraints = visibility_constraints
+    # ik_request.constraints = constraints
+
+    # Goal
     req = GetPositionIK.Request()
     req.ik_request = ik_request
 
@@ -126,6 +152,7 @@ def pose_stamped_to_move_group_goal(
     orient_tolerance_rad=0.4,
     plan_only=False,
 ):
+    """Create a MoveGroup.Goal from a PoseStamped"""
     req = MotionPlanRequest()
     # WorkspaceParameters
     req.workspace_parameters.min_corner = Vector3()
@@ -193,6 +220,7 @@ def pose_stamped_to_move_group_goal(
 
 
 def moveit_error_code_to_string(val):
+    """Convert a MoveItErrorCodes error code to a string"""
     # overall behavior
     if val == MoveItErrorCodes.SUCCESS:
         return "SUCCESS"
@@ -323,26 +351,22 @@ class MoveToGoal(Node):
             self, FollowJointTrajectory, self.follow_joint_traj_action_name
         )
 
-        pose = Pose()
-        pose.position.x = 0.169
-        pose.position.y = -0.1957
-        pose.position.z = 0.0873
-        # pose.orientation.w = 0.0201
-        # pose.orientation.x = 0.1072
-        # pose.orientation.y = 0.7648
-        # pose.orientation.z = 0.6349
-        pose.orientation.w = 1.0
-        pose.orientation.x = 0.0
-        pose.orientation.y = 0.0
-        pose.orientation.z = 0.0
-
-        self.pose_target_callback(pose)
+        # state
+        self.done = False
+        self.busy = False
 
     def pose_target_callback(self, msg: Pose):
+        """Called when a Pose is received on /pose_target"""
         with self.pose_target_mutex:
             self.pose_target = deepcopy(msg)
 
-        self.send_compute_ik_request(self.pose_target)
+        if not self.busy:
+            self.get_logger().warn(f"Processing pose target: {self.pose_target}")
+            self.busy = True
+            self.done = False
+            self.send_compute_ik_request(self.pose_target)
+        else:
+            self.get_logger().warn("Busy, pose target will be ignored")
 
     def send_compute_ik_request(self, pose_target):
         ps = PoseStamped()
@@ -369,6 +393,8 @@ class MoveToGoal(Node):
         if result.error_code.val != MoveItErrorCodes.SUCCESS:
             error_str = moveit_error_code_to_string(result.error_code.val)
             self.get_logger().info(f"Failed to compute IK: {error_str}")
+            self.busy = False
+            self.done = False
         else:
             # result.solution is a RobotState
             robot_state = result.solution
@@ -388,9 +414,7 @@ class MoveToGoal(Node):
             # TODO: alternatively, use the /move_action
             # self.move_action_send_goal(self.pose_target)
 
-
         self.get_logger().info("Compute IK done")
-        self.get_logger().info("Waiting for input...")
 
     def follow_joint_traj_send_goal(self, joint_state):
         self.get_logger().info("FollowJointTrajectory send goal")
@@ -412,6 +436,8 @@ class MoveToGoal(Node):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info("FollowJointTrajectory goal rejected")
+            self.busy = False
+            self.done = False
             return
 
         self.get_logger().info("FollowJointTrajectory goal accepted")
@@ -425,10 +451,16 @@ class MoveToGoal(Node):
         result = future.result().result
         if result.error_code != result.SUCCESSFUL:
             error_str = follow_joint_traj_error_code_to_string(result.error_code)
-            self.get_logger().info(f"Failed to move arm: {error_str}: {result.error_string}")
+            self.get_logger().info(
+                f"Failed to move arm: {error_str}: {result.error_string}"
+            )
+            self.done = False
         else:
             self.get_logger().info(f"Arm moved to pose target")
+            self.done = True
         # self.get_logger().info(f"Result: {result}")
+        self.busy = False
+
 
     def follow_joint_traj_feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
