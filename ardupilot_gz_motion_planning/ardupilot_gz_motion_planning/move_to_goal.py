@@ -17,6 +17,7 @@ from geometry_msgs.msg import Vector3
 
 from moveit_msgs.action import MoveGroup
 from moveit_msgs.msg import Constraints
+from moveit_msgs.msg import JointConstraint
 from moveit_msgs.msg import MotionPlanRequest
 from moveit_msgs.msg import MoveItErrorCodes
 from moveit_msgs.msg import OrientationConstraint
@@ -24,6 +25,7 @@ from moveit_msgs.msg import PlanningOptions
 from moveit_msgs.msg import PositionConstraint
 from moveit_msgs.msg import PositionIKRequest
 from moveit_msgs.msg import RobotState
+from moveit_msgs.msg import VisibilityConstraint
 from moveit_msgs.srv import GetPositionIK
 
 from sensor_msgs.msg import JointState
@@ -32,6 +34,8 @@ from shape_msgs.msg import SolidPrimitive
 
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
+
+from transforms3d import quaternions
 
 from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
@@ -84,6 +88,10 @@ def pose_stamped_to_position_ik_request(
     pose_stamped,
     eef_link,
     group_name,
+    position_tolerance_m=0.02,
+    orient_tolerance_rad=0.4,
+    collision_aware_ik=False,
+    approx_ik_solutions=False,
 ):
     """Create a GetPositionIK.Request from a PoseStamped"""
     # TODO: obtain joint state using query or SRDF
@@ -107,35 +115,46 @@ def pose_stamped_to_position_ik_request(
     ik_request = PositionIKRequest()
     ik_request.group_name = group_name
     ik_request.robot_state = robot_state
-    ik_request.avoid_collisions = True
+    ik_request.avoid_collisions = collision_aware_ik
     ik_request.ik_link_name = eef_link
     ik_request.pose_stamped = pose_stamped
     # default planning time
     # ik_request.timeout = self.planning_time
 
     # Constraints
-    joint_constraints = []
-    joint_constraint = JointConstraint()
-    joint_constraints.append(joint_constraint)
+    if approx_ik_solutions:
+        pc = PositionConstraint()
+        pc.header = pose_stamped.header
+        pc.link_name = eef_link
+        pc.target_point_offset = Vector3(x=0.0, y=0.0, z=0.0)
+        pc.weight = 1.0
 
-    position_constraints = []
-    position_constraint = PositionConstraint()
-    position_constraints.append(position_constraint)
+        sp = SolidPrimitive()
+        sp.type = SolidPrimitive.SPHERE
+        sp.dimensions = [float(position_tolerance_m)]
 
-    orientation_constraints = []
-    orientation_constraint = OrientationConstraint()
-    orientation_constraints.append(orientation_constraint)
+        sp_pose = Pose()
+        sp_pose.position = pose_stamped.pose.position
+        sp_pose.orientation.w = 1.0
 
-    visibility_constraints = []
-    visibility_constraint = VisibilityConstraint()
-    visibility_constraints.append(visibility_constraint)
+        pc.constraint_region.primitives.append(sp)
+        pc.constraint_region.primitive_poses.append(sp_pose)
 
-    constraints = Constraints()
-    constraints.joint_constraints = joint_constraints
-    constraints.position_constraints = position_constraints
-    constraints.orientation_constraints = orientation_constraints
-    constraints.visibility_constraints = visibility_constraints
-    # ik_request.constraints = constraints
+        oc = OrientationConstraint()
+        oc.header = pose_stamped.header
+        oc.link_name = eef_link
+        oc.orientation = pose_stamped.pose.orientation
+        oc.absolute_x_axis_tolerance = float(orient_tolerance_rad)
+        oc.absolute_y_axis_tolerance = float(orient_tolerance_rad)
+        oc.absolute_z_axis_tolerance = float(orient_tolerance_rad)
+        oc.weight = 1.0
+        oc.parameterization = OrientationConstraint.XYZ_EULER_ANGLES
+
+        c = Constraints()
+        c.name = "goal"
+        c.position_constraints.append(pc)
+        c.orientation_constraints.append(oc)
+        ik_request.constraints = c
 
     # Goal
     req = GetPositionIK.Request()
@@ -156,19 +175,39 @@ def pose_stamped_to_move_group_goal(
     req = MotionPlanRequest()
     # WorkspaceParameters
     req.workspace_parameters.min_corner = Vector3()
-    req.workspace_parameters.min_corner.x = -1.0
-    req.workspace_parameters.min_corner.y = -1.0
+    req.workspace_parameters.min_corner.x = -2.0
+    req.workspace_parameters.min_corner.y = -2.0
     req.workspace_parameters.min_corner.z = 0.0
     req.workspace_parameters.max_corner = Vector3()
-    req.workspace_parameters.max_corner.x = 1.0
-    req.workspace_parameters.max_corner.y = 1.0
-    req.workspace_parameters.max_corner.z = 1.0
-    # RobotState start_state
+    req.workspace_parameters.max_corner.x = 2.0
+    req.workspace_parameters.max_corner.y = 2.0
+    req.workspace_parameters.max_corner.z = 2.0
 
+    # RobotState
+    # TODO: get current to use as start state
+    start_state = RobotState()
+    start_state.joint_state = JointState()
+    start_state.joint_state.name = [
+        "Shoulder_Rotation",
+        "Shoulder_Pitch",
+        "Elbow",
+        "Wrist_Pitch",
+        "Wrist_Roll",
+    ]
+    start_state.joint_state.position = [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+    ]
+    req.start_state = start_state
+
+    # TODO: except group_name, options should come from params
     req.pipeline_id = "ompl"
     req.planner_id = "RRTConnect"
     req.group_name = group_name
-    req.num_planning_attempts = 5
+    req.num_planning_attempts = 3
     req.allowed_planning_time = 5.0
     req.max_velocity_scaling_factor = 0.5
     req.max_acceleration_scaling_factor = 0.5
@@ -296,25 +335,45 @@ class MoveToGoal(Node):
     def __init__(self):
         super().__init__("move_to_goal")
 
+        # Parameters
+        self.declare_parameter("planning_group", "arm")
+        self.declare_parameter("base_frame", "base_link")
+        self.declare_parameter("eef_link", "End_Effector")
+        self.declare_parameter("plan_only", False)
+        self.declare_parameter("use_move_action", True)
+        self.declare_parameter("collision_aware_ik", True)
+        self.declare_parameter("approx_ik_solutions", True)
+
+        self.planning_group = (
+            self.get_parameter("planning_group").get_parameter_value().string_value
+        )
+        self.base_frame = (
+            self.get_parameter("base_frame").get_parameter_value().string_value
+        )
+        self.eef_link = self.get_parameter("eef_link").get_parameter_value().string_value
+        self.plan_only = (
+            self.get_parameter("plan_only").get_parameter_value().bool_value
+        )
+        self.use_move_action = (
+            self.get_parameter("use_move_action").get_parameter_value().bool_value
+        )
+        self.collision_aware_ik = (
+            self.get_parameter("collision_aware_ik").get_parameter_value().bool_value
+        )
+        self.approx_ik_solutions = (
+            self.get_parameter("approx_ik_solutions").get_parameter_value().bool_value
+        )
+
         # context
         self.planning_library = "ompl"
 
-        # planning
-        # self.declare_parameter("planning_group", "arm")
-        # self.declare_parameter("eef_link", "End_Effector")
-
-        self.planning_group = "arm"
-        self.base_frame = "base_link"
-        self.eef_link = "End_Effector"
-
+        self.position_tolerance_m = 0.05
+        self.orient_tolerance_rad = 1.0
         self.planning_time = 5.0
-        self.velocity_scaling = 0.1
-        self.acceleration_scaling = 0.1
-        self.planning_attempts = 10
-
-        self.collision_aware_ik = True
-        self.approx_ik_solutions = True
-        self.external_comm = True
+        # self.velocity_scaling = 0.5
+        # self.acceleration_scaling = 0.5
+        # self.planning_attempts = 1
+        self.external_comm = False
 
         # subscribers
         self.pose_target_mutex = Lock()
@@ -351,8 +410,7 @@ class MoveToGoal(Node):
             self, FollowJointTrajectory, self.follow_joint_traj_action_name
         )
 
-        # state
-        self.done = False
+        # activity state
         self.busy = False
 
     def pose_target_callback(self, msg: Pose):
@@ -360,15 +418,34 @@ class MoveToGoal(Node):
         with self.pose_target_mutex:
             self.pose_target = deepcopy(msg)
 
+        # ensure pose target orientation is normalised
+        q = [
+            self.pose_target.orientation.w,
+            self.pose_target.orientation.x,
+            self.pose_target.orientation.y,
+            self.pose_target.orientation.z,
+        ]
+        if not quaternions.qisunit(q):
+            q_norm = quaternions.qnorm(q)
+            self.get_logger().warn(f"Quaternion not normalised: {q_norm}")
+            if q_norm > 0.0:
+                self.pose_target.orientation.x /= q_norm
+                self.pose_target.orientation.y /= q_norm
+                self.pose_target.orientation.z /= q_norm
+                self.pose_target.orientation.w /= q_norm
+
         if not self.busy:
-            self.get_logger().warn(f"Processing pose target: {self.pose_target}")
+            self.get_logger().info(f"Processing pose target: {self.pose_target}")
             self.busy = True
-            self.done = False
-            self.send_compute_ik_request(self.pose_target)
+
+            if self.use_move_action:
+                self.move_action_send_goal(self.pose_target)
+            else:
+                self.compute_ik_send_request(self.pose_target)
         else:
             self.get_logger().warn("Busy, pose target will be ignored")
 
-    def send_compute_ik_request(self, pose_target):
+    def compute_ik_send_request(self, pose_target):
         ps = PoseStamped()
         ps.header.frame_id = self.base_frame
         ps.header.stamp = self.get_clock().now().to_msg()
@@ -378,9 +455,13 @@ class MoveToGoal(Node):
             ps,
             eef_link=self.eef_link,
             group_name=self.planning_group,
+            position_tolerance_m=self.position_tolerance_m,
+            orient_tolerance_rad=self.orient_tolerance_rad,
+            collision_aware_ik=self.collision_aware_ik,
+            approx_ik_solutions=self.approx_ik_solutions,
         )
 
-        # TODO: give feedback?
+        # TODO: give feedback while waiting?
         # while not self.compute_ik_client.wait_for_service(timeout_sec=1.0):
         #     self.get_logger().info(f"Waiting for service {self.compute_ik_name}...")
         self.compute_ik_client.wait_for_service()
@@ -394,7 +475,6 @@ class MoveToGoal(Node):
             error_str = moveit_error_code_to_string(result.error_code.val)
             self.get_logger().info(f"Failed to compute IK: {error_str}")
             self.busy = False
-            self.done = False
         else:
             # result.solution is a RobotState
             robot_state = result.solution
@@ -404,15 +484,16 @@ class MoveToGoal(Node):
                 self.get_logger().info(f"{name}: {position}")
 
             # move arm if successful using /arm_controller/follow_joint_trajectory
+            # TODO: need better filter of valid joints for follow joint traj
             js = JointState()
             js.header.frame_id = joint_state.header.frame_id
             js.header.stamp = self.get_clock().now().to_msg()
             js.name = joint_state.name[0:-1]
             js.position = joint_state.position[0:-1]
-            self.follow_joint_traj_send_goal(js)
 
-            # TODO: alternatively, use the /move_action
-            # self.move_action_send_goal(self.pose_target)
+            # move to pose if plane and execute
+            if not self.plan_only:
+                self.follow_joint_traj_send_goal(js)
 
         self.get_logger().info("Compute IK done")
 
@@ -437,7 +518,6 @@ class MoveToGoal(Node):
         if not goal_handle.accepted:
             self.get_logger().info("FollowJointTrajectory goal rejected")
             self.busy = False
-            self.done = False
             return
 
         self.get_logger().info("FollowJointTrajectory goal accepted")
@@ -454,13 +534,10 @@ class MoveToGoal(Node):
             self.get_logger().info(
                 f"Failed to move arm: {error_str}: {result.error_string}"
             )
-            self.done = False
         else:
             self.get_logger().info(f"Arm moved to pose target")
-            self.done = True
         # self.get_logger().info(f"Result: {result}")
         self.busy = False
-
 
     def follow_joint_traj_feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
@@ -477,15 +554,15 @@ class MoveToGoal(Node):
             ps,
             eef_link=self.eef_link,
             group_name=self.planning_group,
-            position_tolerance_m=0.1,
-            orient_tolerance_rad=0.1,
-            plan_only=False,
+            position_tolerance_m=self.position_tolerance_m,
+            orient_tolerance_rad=self.orient_tolerance_rad,
+            plan_only=self.plan_only,
         )
 
         self.move_action_client.wait_for_server()
         self.move_action_send_goal_future = self.move_action_client.send_goal_async(
             goal_msg,
-            feedback_callback=move_action_feedback_callback,
+            feedback_callback=self.move_action_feedback_callback,
         )
         self.move_action_send_goal_future.add_done_callback(
             self.move_action_goal_response_callback
@@ -496,6 +573,7 @@ class MoveToGoal(Node):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info("MoveGroup goal rejected")
+            self.busy = False
             return
 
         self.get_logger().info("MoveGroup goal accepted")
@@ -513,6 +591,7 @@ class MoveToGoal(Node):
             self.get_logger().info(f"Arm moved to pose target")
 
         self.get_logger().info(f"Result: {result}")
+        self.busy = False
 
     def move_action_feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
