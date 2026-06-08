@@ -3,6 +3,7 @@ Python version of https://moveit.picknik.ai/main/doc/tutorials/your_first_projec
 """
 
 import rclpy
+import math
 
 from copy import deepcopy
 from threading import Lock
@@ -13,6 +14,7 @@ from control_msgs.action import FollowJointTrajectory
 
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import TransformStamped
 from geometry_msgs.msg import Vector3
 
 from moveit_msgs.action import MoveGroup
@@ -32,9 +34,12 @@ from sensor_msgs.msg import JointState
 
 from shape_msgs.msg import SolidPrimitive
 
+from tf2_ros import Buffer, TransformListener
+
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 
+from transforms3d import euler
 from transforms3d import quaternions
 
 from rclpy.action import ActionClient
@@ -346,6 +351,7 @@ class MoveToGoal(Node):
         self.declare_parameter("use_move_action", True)
         self.declare_parameter("collision_aware_ik", True)
         self.declare_parameter("approx_ik_solutions", True)
+        self.declare_parameter("use_target_pos_for_yaw", True)
 
         self.planning_group = (
             self.get_parameter("planning_group").get_parameter_value().string_value
@@ -353,7 +359,9 @@ class MoveToGoal(Node):
         self.base_frame = (
             self.get_parameter("base_frame").get_parameter_value().string_value
         )
-        self.eef_link = self.get_parameter("eef_link").get_parameter_value().string_value
+        self.eef_link = (
+            self.get_parameter("eef_link").get_parameter_value().string_value
+        )
         self.plan_only = (
             self.get_parameter("plan_only").get_parameter_value().bool_value
         )
@@ -365,6 +373,9 @@ class MoveToGoal(Node):
         )
         self.approx_ik_solutions = (
             self.get_parameter("approx_ik_solutions").get_parameter_value().bool_value
+        )
+        self.use_target_pos_for_yaw = (
+            self.get_parameter("use_target_pos_for_yaw").get_parameter_value().bool_value
         )
 
         # context
@@ -416,18 +427,72 @@ class MoveToGoal(Node):
         # activity state
         self.busy = False
 
+        # transforms
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+        self.tf_base_link = TransformStamped()
+        self.tf_shoulder_rotation_pitch = TransformStamped()
+
+        # Check for the transform periodically (50 Hz)
+        self.timer = self.create_timer(0.02, self.get_pose)
+
+    def get_pose(self):
+        # TODO: should use 'map' rather than 'world'
+        try:
+            self.tf_base_link: TransformStamped = self.tf_buffer.lookup_transform(
+                "world", "base_link", rclpy.time.Time()
+            )
+        except:
+            self.get_logger().info("Waiting for valid transform: world to base_link")
+
+        try:
+            self.tf_shoulder_rotation_pitch: TransformStamped = (
+                self.tf_buffer.lookup_transform(
+                    "world", "Shoulder_Rotation_Pitch", rclpy.time.Time()
+                )
+            )
+        except:
+            self.get_logger().info(
+                "Waiting for valid transform: world to Shoulder_Rotation_Pitch"
+            )
+
     def pose_target_callback(self, msg: Pose):
         """Called when a Pose is received on /pose_target"""
         with self.pose_target_mutex:
             self.pose_target = deepcopy(msg)
 
+        # TODO: move to separate function
+        # position of target wrt reference link
+        pos_base = self.tf_base_link.transform.translation
+        pos_shoulder = self.tf_shoulder_rotation_pitch.transform.translation
+        pos_target = self.pose_target.position
+        dx = pos_target.x - pos_shoulder.x
+        dy = pos_target.y - pos_shoulder.y
+        # theta_z = 0 corresponds to the arm directed along the y-axis
+        # so x and y are interchanged in atan2.
+        theta_z = math.atan2(dx, -dy)
+        self.get_logger().info(
+            f"Yaw to target: dx: {dx:.3f}, "
+            f"dy: {dy:.3f}, "
+            f"theta_z: {math.degrees(theta_z):.2f} deg"
+        )
+
+        # Set the yaw based on the angle between the shoulder rotation link
+        # and target position, otherwise use the full pose.
+        if self.use_target_pos_for_yaw:
+            q = euler.euler2quat(0, 0, theta_z)
+            self.pose_target.orientation.w = q[0]
+            self.pose_target.orientation.x = q[1]
+            self.pose_target.orientation.y = q[2]
+            self.pose_target.orientation.z = q[3]
+        else:
+            q = [
+                self.pose_target.orientation.w,
+                self.pose_target.orientation.x,
+                self.pose_target.orientation.y,
+                self.pose_target.orientation.z,
+            ]
         # ensure pose target orientation is normalised
-        q = [
-            self.pose_target.orientation.w,
-            self.pose_target.orientation.x,
-            self.pose_target.orientation.y,
-            self.pose_target.orientation.z,
-        ]
         if not quaternions.qisunit(q):
             q_norm = quaternions.qnorm(q)
             self.get_logger().warn(f"Quaternion not normalised: {q_norm}")
