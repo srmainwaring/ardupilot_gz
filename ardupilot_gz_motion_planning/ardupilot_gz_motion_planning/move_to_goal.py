@@ -169,6 +169,9 @@ def pose_stamped_to_move_group_goal(
     group_name,
     position_tolerance_m=0.02,
     orient_tolerance_rad=0.4,
+    velocity_scaling=0.5,
+    acceleration_scaling=0.5,
+    num_planning_attempts=3,
     plan_only=False,
 ):
     """Create a MoveGroup.Goal from a PoseStamped"""
@@ -207,10 +210,10 @@ def pose_stamped_to_move_group_goal(
     req.pipeline_id = "ompl"
     req.planner_id = "RRTConnect"
     req.group_name = group_name
-    req.num_planning_attempts = 3
+    req.num_planning_attempts = num_planning_attempts
     req.allowed_planning_time = 5.0
-    req.max_velocity_scaling_factor = 0.5
-    req.max_acceleration_scaling_factor = 0.5
+    req.max_velocity_scaling_factor = velocity_scaling
+    req.max_acceleration_scaling_factor = acceleration_scaling
 
     # Constraints
     pc = PositionConstraint()
@@ -367,12 +370,12 @@ class MoveToGoal(Node):
         # context
         self.planning_library = "ompl"
 
-        self.position_tolerance_m = 0.05
-        self.orient_tolerance_rad = 1.0
+        self.position_tolerance_m = 0.01
+        self.orient_tolerance_rad = 0.4
         self.planning_time = 5.0
-        # self.velocity_scaling = 0.5
-        # self.acceleration_scaling = 0.5
-        # self.planning_attempts = 1
+        self.velocity_scaling = 0.5
+        self.acceleration_scaling = 0.5
+        self.planning_attempts = 1
         self.external_comm = False
 
         # subscribers
@@ -556,6 +559,7 @@ class MoveToGoal(Node):
             group_name=self.planning_group,
             position_tolerance_m=self.position_tolerance_m,
             orient_tolerance_rad=self.orient_tolerance_rad,
+            num_planning_attempts=self.planning_attempts,
             plan_only=self.plan_only,
         )
 
